@@ -6,20 +6,23 @@
         <title>Home</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
-        <p>This is the homepage!</p>
-        <h1>${key}</h1>
-        card: ${card}
-            <br>
-        image: ${image}
-            <br>
-        text: ${text}
-    <br>
-		image url: ${imageUrl}<br>
-        cards size: ${cards.size()}<br>
-        <c:forEach items="${cards}" var="url">
-            url: ${url}
-			<img src="${url}"><br>
-        </c:forEach>
+    <c:if test="${not empty card}">
+        <img src="${card.imageUrl}"><br>
+        <h3>${card.name}</h3><br>
+        <p>${card.type}</p><br>
+        <c:forEach var="var" items="${card.types}">
+            <p><c:out value="${var}" /></p>
+        </c:forEach><br>
+        <p>${card.rarity}</p><br>
+        <p>${card.setName}</p><br>
+        <p>${card.text}</p><br>
+
+    </c:if>
+        <form action="/" method="post">
+            <div class="input-group">
+                <input name="searchedCardName" type="text" class="form-control form-text"/>
+                <button type="submit">Search</button>
+            </div>
+        </form>
     </body>
 </html>
