@@ -21,8 +21,6 @@ public class UserController {
 
 	@GetMapping("/registration")
 	public String registration(Model model) {
-		model.addAttribute("userForm", new UserDTO());
-
 		return "registration";
 	}
 
@@ -39,7 +37,7 @@ public class UserController {
 			logger.info("!!!!!!!!! user is: " + user);
 			userRepository.saveUser(user);
 			logger.info("!!!!!!!!! user added !!!!!!!!!!!!!!!!!!!");
-			return "redirect: /search";
+			return "search";
 		}else {
 			logger.info("!!!!!!!!! user not added !!!!!!!!!!!!!!!!!!!");
 			return "registration";

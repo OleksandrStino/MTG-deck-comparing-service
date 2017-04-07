@@ -18,7 +18,7 @@
 	<p>${card.text}</p><br>
 
 </c:if>
-<form action="/home" method="post">
+<form action="/search" method="post">
 	<div class="input-group">
 		<input name="searchedCardName" type="text" class="form-control form-text"/>
 		<button type="submit">Search</button>
