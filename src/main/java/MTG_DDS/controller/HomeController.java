@@ -3,7 +3,6 @@ package MTG_DDS.controller;
 
 import MTG_DDS.entities.CardDTO;
 import MTG_DDS.service.JsonParser;
-import MTG_DDS.services.RedisService.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,9 +20,6 @@ public class HomeController {
 	private String CARD_NAME_URL = "https://api.magicthegathering.io/v1/cards?name=";
 
 	@Autowired
-	private RedisService redisService;
-
-	@Autowired
 	private JsonParser jsonParser;
 
 	@GetMapping("/")
@@ -31,7 +27,12 @@ public class HomeController {
 		return "home";
 	}
 
-	@PostMapping
+	@GetMapping("/search")
+	public String searchCard() {
+		return "search";
+	}
+
+	@PostMapping("/search")
 	public String projectSearchByTitle(@RequestParam String searchedCardName, Model model) {
 		String url = CARD_NAME_URL.concat(searchedCardName);
 
@@ -42,7 +43,7 @@ public class HomeController {
 			e.printStackTrace();
 		}
 		model.addAttribute("card", card);
-		return "home";
+		return "search";
 	}
 
 }
