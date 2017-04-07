@@ -1,46 +1,49 @@
 package MTG_DDS.controller;
 
 
-import MTG_DDS.services.MTG_Service.MTGService;
-import MTG_DDS.services.RedisService.RedisService;
-import io.magicthegathering.javasdk.api.CardAPI;
-import io.magicthegathering.javasdk.resource.Card;
+import MTG_DDS.entities.CardDTO;
+import MTG_DDS.service.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import java.io.IOException;
+import java.net.URL;
 
 @Controller
 public class HomeController {
 
-	@Autowired
-	private RedisService redisService;
+
+	private String CARD_NAME_URL = "https://api.magicthegathering.io/v1/cards?name=";
 
 	@Autowired
-	private MTGService mtgService;
+	private JsonParser jsonParser;
 
 	@GetMapping("/")
-	public String initialMethod(ModelMap model) {
-		Card card = CardAPI.getCard(7169);
-		String imageName = card.getImageName();
-		String text = card.getText();
-		List<String> allCards = mtgService.getAllCards();
-		String imageUrl = allCards.get(0);
-		redisService.setValue("key", "MTG");
-
-		if(imageName==null){
-			imageName="null";
-		}
-		model.addAttribute("imageUrl", imageUrl);
-		model.addAttribute("cards", allCards);
-		model.addAttribute("text", text);
-		model.addAttribute("key", redisService.getValue("key"));
-		model.addAttribute("image", imageName);
-		model.addAttribute("card", card);
-
+	public String initialMethod() {
 		return "home";
+	}
+
+	@GetMapping("/search")
+	public String searchCard() {
+		return "search";
+	}
+
+	@PostMapping("/search")
+	public String projectSearchByTitle(@RequestParam String searchedCardName, Model model) {
+		String url = CARD_NAME_URL.concat(searchedCardName);
+
+		CardDTO card = null;
+		try {
+			card = jsonParser.getCardFromUrl(new URL(url));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("card", card);
+		return "search";
 	}
 
 }

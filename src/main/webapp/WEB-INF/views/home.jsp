@@ -6,20 +6,7 @@
         <title>Home</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
-        <p>This is the homepage!</p>
-        <h1>${key}</h1>
-        card: ${card}
-            <br>
-        image: ${image}
-            <br>
-        text: ${text}
-    <br>
-		image url: ${imageUrl}<br>
-        cards size: ${cards.size()}<br>
-        <c:forEach items="${cards}" var="url">
-            url: ${url}
-			<img src="${url}"><br>
-        </c:forEach>
+    <button><a href="/registration">REGISTRATION</a></button>
+    <button><a href="/search">Search Page</a></button>
     </body>
 </html>
