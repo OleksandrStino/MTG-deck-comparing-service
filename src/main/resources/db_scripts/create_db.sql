@@ -1,0 +1,5 @@
+CREATE TABLE APP_USER (
+  id bigserial NOT NULL PRIMARY KEY,
+  name VARCHAR (40) UNIQUE NOT NULL,
+  password VARCHAR (60) NOT NULL
+);
