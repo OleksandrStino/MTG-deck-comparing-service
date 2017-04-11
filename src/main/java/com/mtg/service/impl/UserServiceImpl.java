@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User editBank(User user) {
+	public User editUser(User user) {
 		return userRepository.saveAndFlush(user);
 	}
 

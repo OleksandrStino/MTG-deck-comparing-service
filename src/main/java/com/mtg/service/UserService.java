@@ -14,7 +14,7 @@ public interface UserService {
 
 	User findByName(String name);
 
-	User editBank(User bank);
+	User editUser(User user);
 
 	List<User> getAll();
 }
