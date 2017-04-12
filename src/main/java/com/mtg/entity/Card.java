@@ -1,9 +1,8 @@
 package com.mtg.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "card")
@@ -15,7 +14,18 @@ public class Card {
 	@Column
 	private String name;
 
+	@ManyToMany(mappedBy = "cards")
+	private List<Deck> decks = new ArrayList<>();
+
 	public Card() {
+	}
+
+	public List<Deck> getDecks() {
+		return decks;
+	}
+
+	public void setDecks(List<Deck> decks) {
+		this.decks = decks;
 	}
 
 	public long getMultiverseid() {
@@ -33,4 +43,6 @@ public class Card {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+
 }

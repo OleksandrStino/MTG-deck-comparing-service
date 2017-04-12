@@ -3,6 +3,8 @@ package com.mtg.entity;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "app_user")
@@ -16,12 +18,15 @@ public class User {
 	@Column
 	private String name;
 
-	@Column
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<Deck> decks = new ArrayList<>();
+
+	/*@Column
 	private String password;
 
 	@Transient
 	private String confirmPassword;
-
+*/
 	public User() {
 	}
 
@@ -45,7 +50,7 @@ public class User {
 		this.name = name;
 	}
 
-	public String getPassword() {
+	/*public String getPassword() {
 		return password;
 	}
 
@@ -59,5 +64,5 @@ public class User {
 
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
-	}
+	}*/
 }
