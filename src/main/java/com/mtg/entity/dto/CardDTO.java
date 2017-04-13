@@ -88,7 +88,7 @@ public class CardDTO {
 				", type='" + type + '\'' +
 				", types=" + types +
 				", rarity='" + rarity + '\'' +
-				", setName='" + setName + '\'' +
+				", setUsername='" + setName + '\'' +
 				", text='" + text + '\'' +
 				'}';
 	}

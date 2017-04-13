@@ -4,6 +4,7 @@ import com.mtg.entity.User;
 import com.mtg.repository.UserRepository;
 import com.mtg.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +15,15 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserRepository userRepository;
 
+	private void passwordEncoder(User user) {
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(12);
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+	}
+
 	@Override
 	public User addUser(User user) {
+		passwordEncoder(user);
+		user.setRole("ROLE_USER");
 		return userRepository.saveAndFlush(user);
 	}
 
@@ -25,8 +33,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User findByName(String name) {
-		return userRepository.findByName(name);
+	public User findByUsername(String name) {
+		return userRepository.findByUsername(name);
 	}
 
 	@Override
