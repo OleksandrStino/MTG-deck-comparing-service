@@ -1,7 +1,5 @@
 package com.mtg.entity;
 
-import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,46 +9,40 @@ import java.util.List;
 public class User {
 
 	@Id
-	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name= "increment", strategy= "increment")
-	private long id;
+	private String username;
 
-	@Column
-	private String name;
-
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Deck> decks = new ArrayList<>();
 
-	/*@Column
+	@Column
+	private boolean enabled;
+
+
+	@Column
+	private String role;
+
+	@Column
 	private String password;
 
 	@Transient
 	private String confirmPassword;
-*/
+
 	public User() {
 	}
 
-	public User(String name) {
-		this.name = name;
+	public User(String username) {
+		this.username = username;
 	}
 
-	public long getId() {
-		return id;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	/*public String getPassword() {
+	public String getPassword() {
 		return password;
 	}
 
@@ -58,11 +50,47 @@ public class User {
 		this.password = password;
 	}
 
+	public List<Deck> getDecks() {
+		return decks;
+	}
+
+	public void setDecks(List<Deck> decks) {
+		this.decks = decks;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"username='" + username + '\'' +
+				", decks=" + decks +
+				", enabled=" + enabled +
+				", role='" + role + '\'' +
+				", password='" + password + '\'' +
+				'}';
+	}
+
+
 	public String getConfirmPassword() {
 		return confirmPassword;
 	}
 
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
-	}*/
+	}
 }

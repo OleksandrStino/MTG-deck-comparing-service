@@ -11,14 +11,15 @@ public class Deck {
 
 	@Id
 	@GeneratedValue(generator = "increment")
-	@GenericGenerator(name= "increment", strategy= "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	private long id;
 
 	@Column
 	private String name;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "card_deck", joinColumns = @JoinColumn(name = "deck_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "card_id", referencedColumnName = "multiverseid"))
+	@JoinTable(name = "card_deck", joinColumns = @JoinColumn(name = "deck_id", referencedColumnName = "id"),
+			inverseJoinColumns = @JoinColumn(name = "card_id", referencedColumnName = "multiverseid"))
 	private List<Card> cards;
 
 	@ManyToOne
@@ -58,5 +59,15 @@ public class Deck {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	@Override
+	public String toString() {
+		return "Deck{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", cards=" + cards +
+				", user=" + user +
+				'}';
 	}
 }

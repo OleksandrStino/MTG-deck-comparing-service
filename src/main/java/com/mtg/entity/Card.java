@@ -44,5 +44,12 @@ public class Card {
 		this.name = name;
 	}
 
-
+	@Override
+	public String toString() {
+		return "Card{" +
+				"multiverseid=" + multiverseid +
+				", name='" + name + '\'' +
+				", decks=" + decks +
+				'}';
+	}
 }
