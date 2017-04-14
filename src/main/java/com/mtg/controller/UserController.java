@@ -1,7 +1,6 @@
 package com.mtg.controller;
 
 import com.mtg.entity.Card;
-import com.mtg.entity.Deck;
 import com.mtg.entity.User;
 import com.mtg.entity.dto.CardDTO;
 import com.mtg.service.impl.CardServiceImpl;
@@ -17,11 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
-public class HelloController {
+public class UserController {
 
 	@Autowired
 	private UserServiceImpl userService;
@@ -38,25 +35,32 @@ public class HelloController {
 	private JsonParser jsonParser;
 
 
-	@GetMapping("/")
+	/*@GetMapping("/")
 	public String initialMethod() {
-		return "hello";
+		return "index";
+	}*/
+
+	@GetMapping("/register")
+	public String registration() {
+		return "register";
 	}
 
-	@PostMapping("/")
-	public String addUser(@RequestParam String name, Model model) {
-		if (null != name && null == userService.findByName(name)) {
-			User user = new User(name);
+	@PostMapping("/register")
+	public String addUser(@RequestParam String username, @RequestParam String password, Model model) {
+		if (null != username && null == userService.findByUsername(username)) {
+			User user = new User(username);
+			user.setPassword(password);
+			user.setEnabled(true);
 			userService.addUser(user);
 			model.addAttribute("user", user);
 		}
-		if (null != name && null != userService.findByName(name)) {
+		if (null != username && null != userService.findByUsername(username)) {
 			model.addAttribute("message", "user already exist");
 		} else {
 			model.addAttribute("message", "user name is empty");
 		}
 
-		return "hello";
+		return "register";
 	}
 
 	@GetMapping("/addCart")
@@ -74,30 +78,8 @@ public class HelloController {
 			model.addAttribute("card", card);
 		}
 
-		return "hello";
+		return "index";
 	}
-
-	@GetMapping("/addDeck")
-	public String addDeckGet() {
-		return "hello";
-	}
-
-	@PostMapping("/addDeck")
-	public String addDeck(@RequestParam String name, Model model) {
-		if (null != name) {
-			Deck deck = new Deck();
-			deck.setName(name);
-			List<Card> list = new ArrayList<>();
-			list.add(cardService.findByName("as"));
-			deck.setCards(list);
-			deck.setUser(userService.findByName("as"));
-			deckService.addDeck(deck);
-			model.addAttribute("deck", deck);
-		}
-
-		return "hello";
-	}
-
 
 	@GetMapping("/search")
 	public String searchCard() {
@@ -115,6 +97,6 @@ public class HelloController {
 			e.printStackTrace();
 		}
 		model.addAttribute("card", card);
-		return "home";
+		return "index";
 	}
 }
