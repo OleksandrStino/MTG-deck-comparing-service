@@ -29,6 +29,10 @@ public class Deck {
 	public Deck() {
 	}
 
+	public Deck(String name) {
+		this.name = name;
+	}
+
 	public long getId() {
 		return id;
 	}

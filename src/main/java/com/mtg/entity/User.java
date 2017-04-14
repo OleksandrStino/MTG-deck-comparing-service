@@ -11,7 +11,7 @@ public class User {
 	@Id
 	private String username;
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "user", orphanRemoval = true)
 	private List<Deck> decks = new ArrayList<>();
 
 	@Column
