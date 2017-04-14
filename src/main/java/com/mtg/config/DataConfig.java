@@ -1,28 +1,27 @@
 package com.mtg.config;
 
-import org.springframework.core.env.Environment;
 import org.hibernate.ejb.HibernatePersistence;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import javax.sql.DataSource;
 import javax.annotation.Resource;
+import javax.sql.DataSource;
 import java.util.Properties;
 
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan("com.mtg")
 @PropertySource("classpath:app.properties")
 @EnableJpaRepositories("com.mtg.repository")
-public class DataConfig {
+public class DataConfig extends WebMvcConfigurerAdapter{
 
 	private static final String PROP_DATABASE_DRIVER = "db.driver";
 	private static final String PROP_DATABASE_PASSWORD = "db.password";
