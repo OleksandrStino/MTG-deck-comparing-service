@@ -1,5 +1,6 @@
 package com.mtg.controller;
 
+import com.mtg.entity.Card;
 import com.mtg.entity.Deck;
 import com.mtg.service.impl.DeckServiceImpl;
 import com.mtg.service.impl.UserServiceImpl;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Map;
 
 @Controller
 public class DeckController {
@@ -56,4 +59,17 @@ public class DeckController {
 		deckService.delete(deckId);
 		return "redirect:/";
 	}
+
+	@PostMapping("/decks/{deckId}/updateDeck")
+	public String updateDeck(@PathVariable Long deckId, HttpServletRequest request) {
+		Deck deck = deckService.findById(deckId);
+		Map<Card, Integer> mapOfCards = (Map<Card, Integer>) request.getSession().getAttribute("mapOfCards");
+		logger.info("map Of cards: " + mapOfCards);
+		deckService.editDeck(deck, mapOfCards);
+		mapOfCards.clear();
+
+		return "redirect: /decks/" + deckId;
+	}
+
+
 }

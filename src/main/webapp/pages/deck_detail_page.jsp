@@ -26,18 +26,34 @@
 	<h2>Add card</h2>
 	<br>
 
-	<form action="/addCart" method="post">
+	<form action="/decks/${deck.id}/addCard" method="post">
 		<div class="input-group">
 			<input name="cardName" type="text" class="form-control form-text"/>
-			<input name="id" type="text" class="form-control form-text"/>
+			<input name="amount" type="text" class="form-control form-text"/>
 			<button type="submit">addCard</button>
 		</div>
 	</form>
 	<br>
 
+
 	<br>
-	<c:if test="${not empty card.name}">
-		card <c:out value="${card.name}"/> is added
+	Cards in buffer:
+	<c:if test="${not empty mapOfCards}">
+		<c:forEach var="entry" items="${mapOfCards}">
+			Name: <c:out value="${entry.key.name}"/>
+			amount: <c:out value="${entry.value}"/>
+		</c:forEach>
+	</c:if>
+	<br>
+	<form action="/decks/${deck.id}/updateDeck" method="post">
+		<button type="submit">updateDeck</button>
+	</form>
+	Cards in deck:
+	<c:if test="${not empty deck.cards}">
+		<c:forEach var="entry" items="${deck.cards}">
+			Name: <c:out value="${entry.key.name}"/>
+			amount: <c:out value="${entry.value}"/>
+		</c:forEach>
 	</c:if>
 
 </div>

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CardServiceImpl implements CardService{
@@ -37,5 +38,16 @@ public class CardServiceImpl implements CardService{
 	@Override
 	public List<Card> getAll() {
 		return cardRepository.findAll();
+	}
+
+	public void comparingOfAddedAndExistedCardsInSession(Map<Card, Integer> cards, Card card, Integer amount) {
+		cards.forEach((k, v) -> {
+			if (k.equals(card)) {
+				cards.put(card, amount + v);
+			}
+		});
+		if (!cards.containsKey(card)) {
+			cards.put(card, amount);
+		}
 	}
 }

@@ -45,7 +45,7 @@ public class JsonParser {
 
 	private CardDTO createCard(JSONObject jsonObject) {
 		CardDTO card = new CardDTO();
-		card.setMultiverseid((Integer) jsonObject.get("multiverseid"));
+		card.setMultiverseid((Long) jsonObject.get("multiverseid"));
 		card.setName((String) jsonObject.get("name"));
 		card.setImageUrl((String) jsonObject.get("imageUrl"));
 		card.setType((String) jsonObject.get("type"));
