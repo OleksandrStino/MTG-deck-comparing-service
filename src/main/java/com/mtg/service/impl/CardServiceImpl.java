@@ -21,6 +21,11 @@ public class CardServiceImpl implements CardService{
 	}
 
 	@Override
+	public Card findByMultiverseid(Long id) {
+		return cardRepository.findOne(id);
+	}
+
+	@Override
 	public void delete(long id) {
 		cardRepository.delete(id);
 	}

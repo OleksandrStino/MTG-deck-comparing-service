@@ -9,6 +9,8 @@ import java.util.List;
 public interface CardService {
 	Card addCard(Card card);
 
+	Card findByMultiverseid(Long id);
+
 	void delete(long id);
 
 	Card findByName(String name);

@@ -1,6 +1,7 @@
 package com.mtg.utility;
 
-import com.mtg.entity.dto.CardDTO;
+import com.mtg.entity.Card;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -11,12 +12,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.List;
 
 @Service
 public class JsonParser {
 
-	public CardDTO getCardFromUrl(URL url) throws IOException {
+	private Logger logger = Logger.getLogger(JsonParser.class);
+
+	public Card getCardFromUrl(URL url) throws IOException {
 		StringBuilder stringBuilder = new StringBuilder();
 		System.setProperty("http.agent", "Chrome");
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
@@ -37,19 +39,20 @@ public class JsonParser {
 
 		JSONObject object = null;
 		if (card != null) {
-			object = (JSONObject) card.get(0);
+			object = (JSONObject) card.get(card.size()-1);
 		}
+
+		logger.info("object is: " + object);
 
 		return createCard(object);
 	}
 
-	private CardDTO createCard(JSONObject jsonObject) {
-		CardDTO card = new CardDTO();
+	private Card createCard(JSONObject jsonObject) {
+		Card card = new Card();
 		card.setMultiverseid((Long) jsonObject.get("multiverseid"));
 		card.setName((String) jsonObject.get("name"));
 		card.setImageUrl((String) jsonObject.get("imageUrl"));
 		card.setType((String) jsonObject.get("type"));
-		card.setTypes((List<String>) jsonObject.get("types"));
 		card.setRarity((String) jsonObject.get("rarity"));
 		card.setSetName((String) jsonObject.get("setName"));
 		card.setText((String) jsonObject.get("text"));

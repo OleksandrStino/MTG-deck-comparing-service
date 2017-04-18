@@ -40,8 +40,13 @@
 	Cards in buffer:
 	<c:if test="${not empty mapOfCards}">
 		<c:forEach var="entry" items="${mapOfCards}">
+			<br>
 			Name: <c:out value="${entry.key.name}"/>
+			<br>
+			<img src="${entry.key.imageUrl}">
+			<br>
 			amount: <c:out value="${entry.value}"/>
+			<br>
 		</c:forEach>
 	</c:if>
 	<br>
@@ -51,8 +56,16 @@
 	Cards in deck:
 	<c:if test="${not empty deck.cards}">
 		<c:forEach var="entry" items="${deck.cards}">
-			Name: <c:out value="${entry.key.name}"/>
+			<br>
+
+			<form action="/decks/${deck.id}/${entry.key.multiverseid}/removeCard" method="post">
+				Name: <c:out value="${entry.key.name}"/><button type="submit">remove</button>
+			</form>
+			<br>
+			<img src="${entry.key.imageUrl}">
+			<br>
 			amount: <c:out value="${entry.value}"/>
+			<br>
 		</c:forEach>
 	</c:if>
 

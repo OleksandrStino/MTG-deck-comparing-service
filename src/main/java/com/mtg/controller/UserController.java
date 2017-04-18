@@ -28,13 +28,13 @@ public class UserController {
 			user.setEnabled(true);
 			userService.addUser(user);
 			model.addAttribute("user", user);
+			return "login";
 		}
 		if (null != username && null != userService.findByUsername(username)) {
 			model.addAttribute("message", "user already exist");
 		} else {
 			model.addAttribute("message", "user name is empty");
 		}
-
 		return "index";
 	}
 }

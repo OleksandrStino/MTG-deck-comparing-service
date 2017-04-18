@@ -2,6 +2,7 @@ package com.mtg.controller;
 
 import com.mtg.entity.Card;
 import com.mtg.entity.Deck;
+import com.mtg.entity.User;
 import com.mtg.service.impl.DeckServiceImpl;
 import com.mtg.service.impl.UserServiceImpl;
 import org.apache.log4j.Logger;
@@ -38,10 +39,11 @@ public class DeckController {
 	@PostMapping("/decks")
 	public String addDeck(@RequestParam String name, Model model, Principal principal) {
 		Deck deck;
-		if (!name.isEmpty()) {
-			String username = principal.getName();
+		String username = principal.getName();
+		User user = userService.findByUsername(username);
+		if (!name.isEmpty() && user != null) {
 			deck = deckService.addDeck(new Deck(name), username);
-			model.addAttribute("decks", deckService.findByUser(userService.findByUsername(username)));
+			model.addAttribute("decks", deckService.findByUser(user));
 			return "redirect:/decks/" + deck.getId();
 		}
 

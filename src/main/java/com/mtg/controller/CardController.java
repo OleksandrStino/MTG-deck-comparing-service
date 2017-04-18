@@ -1,12 +1,12 @@
 package com.mtg.controller;
 
 import com.mtg.entity.Card;
-import com.mtg.entity.dto.CardDTO;
+import com.mtg.entity.Deck;
 import com.mtg.service.impl.CardServiceImpl;
+import com.mtg.service.impl.DeckServiceImpl;
 import com.mtg.utility.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +23,9 @@ public class CardController {
 	@Autowired
 	private CardServiceImpl cardService;
 
+	@Autowired
+	private DeckServiceImpl deckService;
+
 	private String CARD_NAME_URL = "https://api.magicthegathering.io/v1/cards?name=";
 
 	@Autowired
@@ -32,25 +35,32 @@ public class CardController {
 
 	@PostMapping("/decks/{deckId}/addCard")
 	public String addCard(@RequestParam String cardName, @RequestParam Integer amount, @PathVariable Long deckId,
-						  Model model, HttpServletRequest request) {
+						  HttpServletRequest request) {
 		String url = CARD_NAME_URL.concat(cardName);
 		Card card = cardService.findByName(cardName);
 
 		if (null != card) {
 			cardService.comparingOfAddedAndExistedCardsInSession(cards, card, amount);
 		} else {
-			CardDTO cardDto;
+			Card newCard;
 			try {
-				cardDto = jsonParser.getCardFromUrl(new URL(url));
-				Card newCard = new Card(cardDto);
+				newCard = jsonParser.getCardFromUrl(new URL(url));
 				cardService.addCard(newCard);
 				cardService.comparingOfAddedAndExistedCardsInSession(cards, newCard, amount);
-				model.addAttribute("card", cardDto);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 		request.getSession().setAttribute("mapOfCards", cards);
+		return "redirect: /decks/" + deckId;
+	}
+
+	@PostMapping("/decks/{deckId}/{cardId}/removeCard")
+	public String removeCard(@PathVariable Long deckId, @PathVariable Long cardId) {
+		Deck deck = deckService.findById(deckId);
+		Map<Card, Integer> cards = deck.getCards();
+		cards.remove(cardService.findByMultiverseid(cardId));
+		deckService.editDeck(deck, cards);
 		return "redirect: /decks/" + deckId;
 	}
 

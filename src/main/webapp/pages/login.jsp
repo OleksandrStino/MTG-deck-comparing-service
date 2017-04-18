@@ -46,13 +46,6 @@
 
 </div>
 
-<c:if test="${not empty user.username}">
-	<c:out value="${user.username}"> is added</c:out>
-</c:if>
-<c:if test="${empty user.username}">
-	<c:out value="${message}"></c:out>
-</c:if>
-<c:out value="${message}"></c:out>
 
 </body>
 </html>

@@ -1,7 +1,5 @@
 package com.mtg.entity;
 
-import com.mtg.entity.dto.CardDTO;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -17,12 +15,21 @@ public class Card {
 	@Column
 	private String name;
 
-	public Card() {
-	}
+	@Column(name = "image")
+	private String imageUrl;
 
-	public Card(CardDTO cardDto) {
-		this.multiverseid = cardDto.getMultiverseid();
-		this.name = cardDto.getName();
+	@Column
+	private String type;
+
+	@Column
+	private String rarity;
+
+	@Column(name = "set")	private String setName;
+
+	@Column
+	private String text;
+
+	public Card() {
 	}
 
 	public long getMultiverseid() {
@@ -41,11 +48,56 @@ public class Card {
 		this.name = name;
 	}
 
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getRarity() {
+		return rarity;
+	}
+
+	public void setRarity(String rarity) {
+		this.rarity = rarity;
+	}
+
+	public String getSetName() {
+		return setName;
+	}
+
+	public void setSetName(String setName) {
+		this.setName = setName;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
 	@Override
 	public String toString() {
 		return "Card{" +
 				"multiverseid=" + multiverseid +
 				", name='" + name + '\'' +
+				", imageUrl='" + imageUrl + '\'' +
+				", type='" + type + '\'' +
+				", rarity='" + rarity + '\'' +
+				", setName='" + setName + '\'' +
+				", text='" + text + '\'' +
 				'}';
 	}
 
