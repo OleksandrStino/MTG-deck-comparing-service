@@ -3,7 +3,7 @@ package com.mtg.entity;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "deck")
@@ -17,10 +17,13 @@ public class Deck {
 	@Column
 	private String name;
 
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "card_deck", joinColumns = @JoinColumn(name = "deck_id", referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "card_id", referencedColumnName = "multiverseid"))
-	private List<Card> cards;
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "card_deck",
+			joinColumns = @JoinColumn(name = "deck_id"))
+	@MapKeyJoinColumn(name = "card_id")
+	@Column(name = "count")
+	private Map<Card, Integer> cards;
+
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -49,11 +52,11 @@ public class Deck {
 		this.name = name;
 	}
 
-	public List<Card> getCards() {
+	public Map<Card, Integer> getCards() {
 		return cards;
 	}
 
-	public void setCards(List<Card> cards) {
+	public void setCards(Map<Card, Integer> cards) {
 		this.cards = cards;
 	}
 
@@ -73,5 +76,23 @@ public class Deck {
 				", cards=" + cards +
 				", user=" + user +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Deck)) return false;
+
+		Deck deck = (Deck) o;
+
+		if (id != deck.id) return false;
+		return name != null ? name.equals(deck.name) : deck.name == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = (int) (id ^ (id >>> 32));
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		return result;
 	}
 }
