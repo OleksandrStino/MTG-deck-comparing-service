@@ -74,6 +74,14 @@ public class User {
 		this.role = role;
 	}
 
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	}
+
 	@Override
 	public String toString() {
 		return "User{" +
@@ -85,12 +93,18 @@ public class User {
 				'}';
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof User)) return false;
 
-	public String getConfirmPassword() {
-		return confirmPassword;
+		User user = (User) o;
+
+		return username.equals(user.username);
 	}
 
-	public void setConfirmPassword(String confirmPassword) {
-		this.confirmPassword = confirmPassword;
+	@Override
+	public int hashCode() {
+		return username.hashCode();
 	}
 }

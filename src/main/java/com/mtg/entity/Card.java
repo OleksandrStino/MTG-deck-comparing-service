@@ -1,8 +1,11 @@
 package com.mtg.entity;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import com.mtg.entity.dto.CardDTO;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "card")
@@ -14,18 +17,12 @@ public class Card {
 	@Column
 	private String name;
 
-	@ManyToMany(mappedBy = "cards")
-	private List<Deck> decks = new ArrayList<>();
-
 	public Card() {
 	}
 
-	public List<Deck> getDecks() {
-		return decks;
-	}
-
-	public void setDecks(List<Deck> decks) {
-		this.decks = decks;
+	public Card(CardDTO cardDto) {
+		this.multiverseid = cardDto.getMultiverseid();
+		this.name = cardDto.getName();
 	}
 
 	public long getMultiverseid() {
@@ -49,7 +46,24 @@ public class Card {
 		return "Card{" +
 				"multiverseid=" + multiverseid +
 				", name='" + name + '\'' +
-				", decks=" + decks +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Card card = (Card) o;
+
+		if (multiverseid != card.multiverseid) return false;
+		return name.equals(card.name);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = (int) (multiverseid ^ (multiverseid >>> 32));
+		result = 31 * result + name.hashCode();
+		return result;
 	}
 }

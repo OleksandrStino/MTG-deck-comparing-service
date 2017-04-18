@@ -4,7 +4,7 @@ import java.util.List;
 
 public class CardDTO {
 
-	private int multiverseid;
+	private Long multiverseid;
 	private String name;
 	private String imageUrl;
 	private String type;
@@ -16,11 +16,11 @@ public class CardDTO {
 	public CardDTO() {
 	}
 
-	public int getMultiverseid() {
+	public Long getMultiverseid() {
 		return multiverseid;
 	}
 
-	public void setMultiverseid(int multiverseid) {
+	public void setMultiverseid(Long multiverseid) {
 		this.multiverseid = multiverseid;
 	}
 
