@@ -1,6 +1,5 @@
 package com.mtg.config;
 
-import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -22,12 +21,11 @@ public class WebInitializer implements WebApplicationInitializer {
 		ctx.register(SecurityConfig.class);
 		servletContext.addListener(new ContextLoaderListener(ctx));
 		ctx.setServletContext(servletContext);
+
 		ServletRegistration.Dynamic servlet = servletContext.addServlet(DISPATCHER_SERVLET_NAME,
 				new DispatcherServlet(ctx));
+
 		servlet.setLoadOnStartup(1);
-		// allow lazy loading in web views despite the original transactions already being completed
-		servletContext.addFilter("OpenEntityManagerInViewFilter", OpenEntityManagerInViewFilter.class)
-				.addMappingForUrlPatterns(null, false, "*");
 		servlet.addMapping("/");
 	}
 }
