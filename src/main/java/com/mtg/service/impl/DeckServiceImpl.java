@@ -72,5 +72,9 @@ public class DeckServiceImpl implements DeckService {
 		return deckRepository.findAll();
 	}
 
-
+	@Override
+	public Deck updateDeckCards(Deck deck, Map<Card, Integer> cards) {
+		deck.setCards(cards);
+		return deckRepository.saveAndFlush(deck);
+	}
 }

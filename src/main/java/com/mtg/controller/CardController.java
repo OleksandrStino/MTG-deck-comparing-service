@@ -56,11 +56,29 @@ public class CardController {
 	}
 
 	@PostMapping("/decks/{deckId}/{cardId}/removeCard")
-	public String removeCard(@PathVariable Long deckId, @PathVariable Long cardId) {
+	public String removeCard(@PathVariable Long deckId, @PathVariable Long cardId, @RequestParam Integer amount) {
 		Deck deck = deckService.findById(deckId);
-		Map<Card, Integer> cards = deck.getCards();
-		cards.remove(cardService.findByMultiverseid(cardId));
-		deckService.editDeck(deck, cards);
+		Map<Card, Integer> currentDeckCards = deck.getCards();
+		Card card = cardService.findByMultiverseid(cardId);
+		Integer amountOfSameCards = currentDeckCards.get(card);
+		if (amount >= amountOfSameCards) {
+			currentDeckCards.remove(card);
+		} else {
+			currentDeckCards.put(card, amountOfSameCards - amount);
+		}
+		deckService.updateDeckCards(deck, currentDeckCards);
+		return "redirect: /decks/" + deckId;
+	}
+
+	@PostMapping("/decks/{deckId}/{cardId}/removeCardFromBuffer")
+	public String removeCardFromBuffer(@PathVariable Long deckId, @PathVariable Long cardId, @RequestParam Integer amount) {
+		Card card = cardService.findByMultiverseid(cardId);
+		Integer amountOfSameCards = cards.get(card);
+		if (amount >= amountOfSameCards) {
+			cards.remove(card);
+		} else {
+			cards.put(card, amountOfSameCards - amount);
+		}
 		return "redirect: /decks/" + deckId;
 	}
 

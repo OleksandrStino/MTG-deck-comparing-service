@@ -23,4 +23,6 @@ public interface DeckService {
 	Deck editDeck(Deck deck, Map<Card, Integer> cards);
 
 	List<Deck> getAll();
+
+	Deck updateDeckCards(Deck deck, Map<Card, Integer> cards);
 }
