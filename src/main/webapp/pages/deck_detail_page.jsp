@@ -20,6 +20,11 @@
 
 <div class="container">
 
+	<form action="/decks/${deck.id}/compareDeck" method="post">
+		<button type="submit">compare</button>
+	</form>
+
+
 	<h1>${deck.name} page</h1>
 	<h2>User: <sec:authentication property="principal.username"/></h2>
 	<br>
@@ -29,7 +34,7 @@
 	<form action="/decks/${deck.id}/addCard" method="post">
 		<div class="input-group">
 			<input name="cardName" type="text" class="form-control form-text"/>
-			<input name="amount" type="text" class="form-control form-text"/>
+			<input name="amount" value="1" type="text" class="form-control form-text"/>
 			<button type="submit">addCard</button>
 		</div>
 	</form>
@@ -70,6 +75,14 @@
 			<br>
 		</c:forEach>
 	</c:if>
+
+	<c:forEach var="entry" items="${mapOfComparingResult}">
+		<br>
+			Deck Name: <c:out value="${entry.key}"/>
+			matches: <c:out value="${entry.value}"/>
+		<br>
+	</c:forEach>
+	<c:out value="${message}"/>
 
 </div>
 </body>

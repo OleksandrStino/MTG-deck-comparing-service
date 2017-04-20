@@ -24,7 +24,6 @@ public class Deck {
 	@Column(name = "count")
 	private Map<Card, Integer> cards;
 
-
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;

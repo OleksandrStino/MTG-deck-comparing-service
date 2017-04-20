@@ -36,7 +36,7 @@ public class CardController {
 	@PostMapping("/decks/{deckId}/addCard")
 	public String addCard(@RequestParam String cardName, @RequestParam Integer amount, @PathVariable Long deckId,
 						  HttpServletRequest request) {
-		String url = CARD_NAME_URL.concat(cardName);
+		String url = CARD_NAME_URL.concat(cardName.replaceAll(" ", "_"));
 		Card card = cardService.findByName(cardName);
 
 		if (null != card) {

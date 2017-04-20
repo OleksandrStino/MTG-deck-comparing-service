@@ -24,7 +24,8 @@ public class Card {
 	@Column
 	private String rarity;
 
-	@Column(name = "set")	private String setName;
+	@Column(name = "set")
+	private String setName;
 
 	@Column
 	private String text;

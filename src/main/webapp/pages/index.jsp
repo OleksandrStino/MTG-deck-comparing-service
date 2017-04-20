@@ -21,6 +21,12 @@
 
 <div class="container">
 
+	<sec:authorize access="hasRole('ADMIN')">
+		<form action="/uploadDecks" method="post">
+			<button type="submit">upload</button>
+		</form>
+	</sec:authorize>
+
 	<h1>Welcome <sec:authentication property="principal.username"/></h1>
 	<br>
 	<h3>Create your deck</h3>
