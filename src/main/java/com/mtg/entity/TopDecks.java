@@ -1,15 +1,19 @@
 package com.mtg.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "existed_decks")
 public class TopDecks {
 
 	@Id
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
+	private long id;
+
+	@Column
 	private String name;
 
 	@Column
@@ -31,10 +35,19 @@ public class TopDecks {
 		this.deck = deck;
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	@Override
 	public String toString() {
 		return "TopDecks{" +
-				"name='" + name + '\'' +
+				"id=" + id +
+				", name='" + name + '\'' +
 				", deck='" + deck + '\'' +
 				'}';
 	}
@@ -46,11 +59,14 @@ public class TopDecks {
 
 		TopDecks topDecks = (TopDecks) o;
 
+		if (id != topDecks.id) return false;
 		return name.equals(topDecks.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return name.hashCode();
+		int result = (int) (id ^ (id >>> 32));
+		result = 31 * result + name.hashCode();
+		return result;
 	}
 }

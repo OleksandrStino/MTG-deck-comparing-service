@@ -8,10 +8,8 @@ import com.mtg.service.impl.DeckServiceImpl;
 import com.mtg.service.impl.TopDecksServiceImpl;
 import com.mtg.service.impl.UserServiceImpl;
 import com.mtg.utility.DeckComparator;
-import com.mtg.utility.FileLoader;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,9 +33,6 @@ public class DeckController {
 
 	@Autowired
 	private DeckServiceImpl deckService;
-
-	@Autowired
-	private FileLoader fileLoader;
 
 	@Autowired
 	private TopDecksServiceImpl existedDecksService;
@@ -87,18 +82,6 @@ public class DeckController {
 		mapOfCards.clear();
 
 		return "redirect: /decks/" + deckId;
-	}
-
-
-	@PreAuthorize("hasRole('ADMIN')")
-	@PostMapping("/uploadDecks")
-	public String uploadDecks() {
-		List<TopDecks> decks = fileLoader.getDecks();
-		decks.forEach((deck) -> {
-			System.out.println(deck);
-			existedDecksService.addDeck(deck);
-		});
-		return "index";
 	}
 
 
