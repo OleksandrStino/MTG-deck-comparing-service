@@ -32,8 +32,7 @@ public class UserController {
 		}
 		if (null != username && null != userService.findByUsername(username)) {
 			model.addAttribute("message", "user already exist");
-		} else {
-			model.addAttribute("message", "user name is empty");
+			return "register";
 		}
 		return "index";
 	}
