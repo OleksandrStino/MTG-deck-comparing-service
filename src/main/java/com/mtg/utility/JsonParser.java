@@ -12,13 +12,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Service
 public class JsonParser {
 
 	private Logger logger = Logger.getLogger(JsonParser.class);
 
-	public Card getCardFromUrl(URL url) throws IOException {
+	public Set<Card> getCardFromUrl(URL url) throws IOException {
 		StringBuilder stringBuilder = new StringBuilder();
 		System.setProperty("http.agent", "Chrome");
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
@@ -27,37 +29,49 @@ public class JsonParser {
 				stringBuilder.append(inputLine);
 			}
 		} catch (IllegalArgumentException e) {
-			System.out.println(e.getMessage());
-		}
-		JSONArray card = null;
-		try {
-			JSONObject genreJsonObject = (JSONObject) JSONValue.parseWithException(stringBuilder.toString());
-			card = (JSONArray) genreJsonObject.get("cards");
-		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 
-		JSONObject object = null;
-		if (card != null) {
-			object = (JSONObject) card.get(card.size()-1);
-		}
+		JSONArray cards = getJsonObject(stringBuilder);
+		logger.info("number of cards is: " + cards.size());
 
-		logger.info("object is: " + object);
-
-		return createCard(object);
+		return createCards(cards);
 	}
 
-	private Card createCard(JSONObject jsonObject) {
-		Card card = new Card();
-		card.setMultiverseid((Long) jsonObject.get("multiverseid"));
-		card.setName((String) jsonObject.get("name"));
-		card.setImageUrl((String) jsonObject.get("imageUrl"));
-		card.setType((String) jsonObject.get("type"));
-		card.setRarity((String) jsonObject.get("rarity"));
-		card.setSetName((String) jsonObject.get("setName"));
-		card.setText((String) jsonObject.get("text"));
+	private JSONArray getJsonObject(StringBuilder stringBuilder) {
+		JSONArray cards = null;
+		try {
+			JSONObject genreJsonObject = (JSONObject) JSONValue.parseWithException(stringBuilder.toString());
+			cards = (JSONArray) genreJsonObject.get("cards");
+		} catch (ParseException e) {
+			logger.error(e.getMessage());
+		}
 
-		return card;
+		return cards;
+	}
+
+	private Set<Card> createCards(JSONArray cards) {
+		Set<Card> cardsList = new LinkedHashSet<>();
+		for (Object cardJsonObject : cards) {
+			JSONObject cardJson = (JSONObject) cardJsonObject;
+			logger.info("card Json:" + cardJsonObject);
+			Long multiverseid = (Long) cardJson.get("multiverseid");
+			logger.info("multiverseid: " + multiverseid);
+			if(null == multiverseid){
+				continue;
+			}
+			Card card = new Card();
+			card.setMultiverseid(multiverseid);
+			card.setName((String) cardJson.get("name"));
+			card.setImageUrl((String) cardJson.get("imageUrl"));
+			card.setType((String) cardJson.get("type"));
+			card.setRarity((String) cardJson.get("rarity"));
+			card.setSetName((String) cardJson.get("setName"));
+			card.setText((String) cardJson.get("text"));
+			cardsList.add(card);
+		}
+
+		return cardsList;
 	}
 
 }

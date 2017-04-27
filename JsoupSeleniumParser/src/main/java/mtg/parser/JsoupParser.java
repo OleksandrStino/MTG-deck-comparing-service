@@ -15,19 +15,33 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class JsoupParser {
 
+	//selenium settings
 	private static final String CHROMEDRIVER_PATHNAME = "C:/Users/owner/Downloads/chromedriver.exe";
 	private static final String CHROMEDRIVER_SYSTEM_PROPERTY = "webdriver.chrome.driver";
 	private static final String NEXT_PAGE_BUTTON_XPATH_EXPRESSION = "//div[@onclick='PageSubmit(%d)']";
-	private static final int SELENIUM_TIMEOUT = 3000;
 	private static final String ROOT_PATH_OF_WEBSITE = "http://mtgtop8.com/";
+
+	/**
+	 * according to "http://mtgtop8.com/" the value of COMPETITION has next values:
+	 * =VI - for vintage
+	 * =LE - for legacy
+	 * =MO - for modern
+	 * =ST - for standard
+	 * =EDH - for commander
+	 */
+	private static final String COMPETITION = "=MO";
 
 	//Keys from app.properties
 	private static final String PROP_DATABASE_DRIVER = "db.driver";
@@ -35,8 +49,12 @@ public class JsoupParser {
 	private static final String PROP_DATABASE_URL = "db.url";
 	private static final String PROP_DATABASE_USERNAME = "db.username";
 
+	private static final String SQL_STATEMENT = "INSERT INTO existed_decks (name, deck, event, rank, deck_url) VALUES (?, ?, ?, ?, ?);";
+
 	//property file with jdbc configuration
 	private static Properties appProperties;
+
+	private static Queue<String> queue = getURLListFromURLsWithDecks("http://mtgtop8.com/format?f=MO&meta=44");
 
 	//initialization property file instance
 	static {
@@ -51,36 +69,79 @@ public class JsoupParser {
 
 
 	public static void main(String[] args) {
-		getDecksFromWebSite("http://mtgtop8.com/archetype?a=193&meta=118&f=MO", Integer.valueOf("2"), "=MO");
+		System.out.println(queue.toString());
+		System.out.println(queue.size());
+
+		long l = System.currentTimeMillis();
+		ExecutorService executor = Executors.newFixedThreadPool(10);
+		for (int i = 0; i < 10; i++) {
+			executor.submit(() -> {
+				String poll;
+				while ((poll = queue.poll()) != null) {
+					System.out.println(poll);
+					String[] split = poll.split(" ");
+					getDecksFromWebSite(split[0], Integer.valueOf(split[1]), split[2]);
+				}
+			});
+		}
+		executor.shutdown();
+		System.out.println((System.currentTimeMillis() - l) / 1000);
+
 	}
+
+
+	/**
+	 *
+	 * @param url
+	 * @return
+	 */
+	private static Queue<String> getURLListFromURLsWithDecks(String url) {
+		Queue<String> queue = new ConcurrentLinkedQueue<>();
+		try {
+			Document document = Jsoup.connect(url).get();
+			Elements stable = document.getElementsByClass("Stable");
+			Element element = stable.get(0);
+			Elements tableRow = element.getElementsByClass("hover_tr");
+			for(Element row : tableRow){
+				Elements tds = row.getElementsByTag("td");
+				String urlRow = tds.get(0).getElementsByTag("a").attr("href");
+				Integer amount = Integer.valueOf(tds.get(1).html());
+				int pages = (int) Math.ceil(amount/20.0);
+				queue.add(ROOT_PATH_OF_WEBSITE.concat(urlRow) + " " + pages + " " + COMPETITION);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return queue;
+	}
+
 
 	private static void getDecksFromWebSite(String url, Integer pages, String typeOfMTGCompetition) {
 		//Get web driver for selenium
 		WebDriver driver = getWebDriver();
 		driver.get(url);
-		for (int i = 1; i <= pages; i++) {
-			//getting of page source of start page
-			if (i == 1) {
+		try (Connection connection = getJDBCConnection()) {
+			for (int i = 1; i <= pages; i++) {
+				//getting of page source of start page
+				if (i == 1) {
+					String pageSource = driver.getPageSource();
+					parseDecks(pageSource, typeOfMTGCompetition, connection);
+					continue;
+				}
+
+				//get element of with button to redirect to the next "i" page
+				WebElement element = driver.findElement(By.xpath(String.format(NEXT_PAGE_BUTTON_XPATH_EXPRESSION, i)));
+				element.click();
+
+				//get source of loaded page
 				String pageSource = driver.getPageSource();
-				parseDecks(pageSource, typeOfMTGCompetition);
-				continue;
+				parseDecks(pageSource, typeOfMTGCompetition, connection);
 			}
-
-			//get element of with button to redirect to the next "i" page
-			WebElement element = driver.findElement(By.xpath(String.format(NEXT_PAGE_BUTTON_XPATH_EXPRESSION, i)));
-			element.click();
-
-			//wait tree seconds for full loading of new page
-			try {
-				Thread.sleep(SELENIUM_TIMEOUT);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			//get source of load page
-			String pageSource = driver.getPageSource();
-			parseDecks(pageSource, typeOfMTGCompetition);
+		} catch (SQLException | ClassNotFoundException e) {
+			e.printStackTrace();
 		}
+		driver.close();
+
 	}
 
 	/**
@@ -94,40 +155,44 @@ public class JsoupParser {
 		return new ChromeDriver();
 	}
 
-	private static void parseDecks(String pageSource, String typeOfCompetition) {
+	private static void parseDecks(String pageSource, String typeOfCompetition, Connection connection) {
 		Document doc = Jsoup.parse(pageSource);
 		try {
 			Elements listOfDecks = getDeckTableWithCards(doc);
-			Connection connection = getJDBCConnection();
+
 			System.out.println("Opened database successfully");
 
 			for (Element element : listOfDecks) {
 				Elements deckRow = element.getElementsByTag("td");
-				String name = getDeckName(deckRow);
+
+				String artifactName = deckRow.get(1).getElementsByTag("a").html();
+				String playerName = deckRow.get(2).getElementsByTag("a").html();
+				String name = artifactName.concat(" ").concat(playerName);
 				System.out.println("Deck name is: " + name);
 				String deckUrl = getDeckUrl(deckRow, typeOfCompetition);
 				System.out.println("Deck url is: " + deckUrl);
-
 				//get page source of deck page
 				Document deckPage = Jsoup.connect(deckUrl).get();
 
+				String competition = deckRow.get(3).getElementsByTag("a").html();
+				String rank = deckRow.get(5).html();
 
 				//replaceAll("'", "''"); uses for validation of insert in PostgreSQL
 				Map<String, String> deckFromWebSite = getDeckFromWebSite(deckPage);
 				String jsonDeckFromWebSite = (new ObjectMapper().writeValueAsString(deckFromWebSite)).replaceAll("'", "''");
 				System.out.println("Deck is: " + jsonDeckFromWebSite);
 
-				writeDataToDB(connection, name, jsonDeckFromWebSite);
+				writeDataToDB(connection, name, jsonDeckFromWebSite, rank, competition, deckUrl);
 			}
 			connection.commit();
-			connection.close();
-		} catch (IOException | SQLException | ClassNotFoundException e) {
+		} catch (IOException | SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * Provide JDBC Connection
+	 *
 	 * @return DB connection
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
@@ -145,20 +210,24 @@ public class JsoupParser {
 
 	/**
 	 * Write deck to DB
-	 * @param connection - JDBC connection
-	 * @param name - name of deck
+	 *
+	 * @param connection          - JDBC connection
+	 * @param name                - name of deck
 	 * @param jsonDeckFromWebSite - json string of deck cards
+	 * @param rank
+	 * @param competition
+	 * @param deckUrl
 	 */
-	private static void writeDataToDB(Connection connection, String name, String jsonDeckFromWebSite) {
-		Statement statement;
-		try {
-			statement = connection.createStatement();
-			String sql = String.format("INSERT INTO existed_decks (name, deck) " +
-					"VALUES ('%s', '%s');", name, jsonDeckFromWebSite);
-			System.out.println(sql);
-			statement.executeUpdate(sql);
+	private static void writeDataToDB(Connection connection, String name, String jsonDeckFromWebSite,
+									  String rank, String competition, String deckUrl) {
+		try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_STATEMENT);) {
+			preparedStatement.setString(1, name);
+			preparedStatement.setString(2, jsonDeckFromWebSite);
+			preparedStatement.setString(3, competition);
+			preparedStatement.setString(4, rank);
+			preparedStatement.setString(5, deckUrl);
+			preparedStatement.executeUpdate();
 			System.out.println("Record created successfully");
-			statement.close();
 
 		} catch (Exception e) {
 			System.err.println("error for deck: " + name + " - " + e.getMessage());
@@ -166,7 +235,7 @@ public class JsoupParser {
 	}
 
 	/**
-	 * Loks for table with list of decks in the html page
+	 * Looks for table with list of decks in the html page
 	 *
 	 * @param doc - page source
 	 * @return html table with list of all decks in the page
@@ -187,20 +256,7 @@ public class JsoupParser {
 	 */
 	private static String getDeckUrl(Elements deckRow, String typeOfCompetition) {
 		String event = deckRow.get(1).getElementsByTag("a").attr("href").split("&")[0];
-		return ROOT_PATH_OF_WEBSITE .concat(event).concat(typeOfCompetition);
-	}
-
-	/**
-	 * Get  deckName from html row
-	 *
-	 * @param deckRow - row with all deck information (link, name)
-	 * @return deckName
-	 */
-	private static String getDeckName(Elements deckRow) {
-		String artifactName = deckRow.get(1).getElementsByTag("a").html();
-		String playerName = deckRow.get(2).getElementsByTag("a").html();
-		String rank = deckRow.get(5).html();
-		return (artifactName.concat(" ").concat(playerName).concat(" rank: ").concat(rank)).replaceAll("'", "''");
+		return ROOT_PATH_OF_WEBSITE.concat(event).concat(typeOfCompetition);
 	}
 
 	/**

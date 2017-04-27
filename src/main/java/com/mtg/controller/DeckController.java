@@ -1,6 +1,5 @@
 package com.mtg.controller;
 
-import com.mtg.entity.Card;
 import com.mtg.entity.Deck;
 import com.mtg.entity.TopDecks;
 import com.mtg.entity.User;
@@ -73,23 +72,11 @@ public class DeckController {
 		return "redirect:/";
 	}
 
-	@PostMapping("/decks/{deckId}/updateDeck")
-	public String updateDeck(@PathVariable Long deckId, HttpServletRequest request) {
-		Deck deck = deckService.findById(deckId);
-		Map<Card, Integer> mapOfCards = (Map<Card, Integer>) request.getSession().getAttribute("mapOfCards");
-		logger.info("map Of cards: " + mapOfCards);
-		deckService.editDeck(deck, mapOfCards);
-		mapOfCards.clear();
-
-		return "redirect: /decks/" + deckId;
-	}
-
-
 	@PostMapping("/decks/{deckId}/compareDeck")
 	public String compareDeck(@PathVariable Long deckId, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 		Deck deck = deckService.findById(deckId);
 		List<TopDecks> topDecks = existedDecksService.findAll();
-		Map<String, Integer> mapOfComparingResult = deckComparator.getCardMatches(deck.getCards(), topDecks);
+		Map<TopDecks, Integer> mapOfComparingResult = deckComparator.getCardMatches(deck.getCards(), topDecks);
 		redirectAttributes.addFlashAttribute("mapOfComparingResult", mapOfComparingResult);
 		return "redirect:" + request.getContextPath() + "/decks/" + deckId;
 	}
