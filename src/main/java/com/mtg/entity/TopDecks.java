@@ -19,6 +19,15 @@ public class TopDecks {
 	@Column
 	private String deck;
 
+	@Column
+	private String event;
+
+	@Column
+	private String rank;
+
+	@Column(name = "deck_url")
+	private String deckUrl;
+
 	public String getName() {
 		return name;
 	}
@@ -39,8 +48,32 @@ public class TopDecks {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
+	}
+
+	public String getEvent() {
+		return event;
+	}
+
+	public void setEvent(String event) {
+		this.event = event;
+	}
+
+	public String getRank() {
+		return rank;
+	}
+
+	public void setRank(String rank) {
+		this.rank = rank;
+	}
+
+	public String getDeckUrl() {
+		return deckUrl;
+	}
+
+	public void setDeckUrl(String deckUrl) {
+		this.deckUrl = deckUrl;
 	}
 
 	@Override
@@ -49,6 +82,9 @@ public class TopDecks {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", deck='" + deck + '\'' +
+				", event='" + event + '\'' +
+				", rank='" + rank + '\'' +
+				", deckUrl='" + deckUrl + '\'' +
 				'}';
 	}
 
@@ -60,13 +96,15 @@ public class TopDecks {
 		TopDecks topDecks = (TopDecks) o;
 
 		if (id != topDecks.id) return false;
-		return name.equals(topDecks.name);
+		if (name != null ? !name.equals(topDecks.name) : topDecks.name != null) return false;
+		return event != null ? event.equals(topDecks.event) : topDecks.event == null;
 	}
 
 	@Override
 	public int hashCode() {
 		int result = (int) (id ^ (id >>> 32));
-		result = 31 * result + name.hashCode();
+		result = 31 * result + (name != null ? name.hashCode() : 0);
+		result = 31 * result + (event != null ? event.hashCode() : 0);
 		return result;
 	}
 }

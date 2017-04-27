@@ -109,14 +109,14 @@ public class Card {
 
 		Card card = (Card) o;
 
-		if (multiverseid != card.multiverseid) return false;
-		return name.equals(card.name);
+		if (name != null ? !name.equals(card.name) : card.name != null) return false;
+		return setName != null ? setName.equals(card.setName) : card.setName == null;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = (int) (multiverseid ^ (multiverseid >>> 32));
-		result = 31 * result + name.hashCode();
+		int result = name != null ? name.hashCode() : 0;
+		result = 31 * result + (setName != null ? setName.hashCode() : 0);
 		return result;
 	}
 }
