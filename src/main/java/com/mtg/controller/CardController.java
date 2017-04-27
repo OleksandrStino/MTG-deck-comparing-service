@@ -93,9 +93,10 @@ public class CardController {
 		Deck deck = deckService.findById(deckId);
 		Map<Card, Integer> mapOfCards = (Map<Card, Integer>) request.getSession().getAttribute("mapOfCards");
 		logger.info("map Of cards: " + mapOfCards);
-		deckService.editDeck(deck, mapOfCards);
-		mapOfCards.clear();
-
+		if(null != mapOfCards){
+			deckService.editDeck(deck, mapOfCards);
+			mapOfCards.clear();
+		}
 		return "redirect: /decks/" + deckId;
 	}
 

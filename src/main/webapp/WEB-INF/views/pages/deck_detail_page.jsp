@@ -92,7 +92,7 @@
 		<c:forEach var="entry" items="${deck.cards}">
 			<br>
 
-			<form action="/decks/${deck.id}/${entry.key.multiverseid}/removeCardFromDeck" method="post">
+			<form action="/decks/${deck.id}/${entry.key.multiverseid}/removeCard" method="post">
 				Name: <c:out value="${entry.key.name}"/><input name="amount" type="number" value="1" class="form-text"><button type="submit">remove</button>
 			</form>
 			<br>
