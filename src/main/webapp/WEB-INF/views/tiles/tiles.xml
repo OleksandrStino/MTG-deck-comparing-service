@@ -21,6 +21,8 @@
     <definition name="deck_detail_page" extends="base-definition">
         <put-attribute name="title" value="Deck details" />
         <put-attribute name="body" value="/WEB-INF/views/pages/deck_detail_page.jsp" />
+        <put-list-attribute name="javascripts" inherit="true">
+        </put-list-attribute>
     </definition>
 
     <definition name="login" extends="base-definition">
