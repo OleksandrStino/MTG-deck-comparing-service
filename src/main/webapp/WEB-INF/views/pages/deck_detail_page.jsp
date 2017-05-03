@@ -26,89 +26,158 @@
 	</form>
 	<br>
 
-
+	<h3>List of cards with same name</h3>
 	<c:if test="${not empty cardList}">
-		<h3>List of cards with same name</h3>
-		<c:forEach var="item" items="${cardList}">
-			<br>
-			<form action="/decks/${deck.id}/addCardFromList" method="post">
-				<div class="input-group">
-					<p class="img">${item.name} ${item.setName}</p>
-					<input id="${fn:replace((item.name.concat(" ").concat(item.setName)), " ", "_")}" type="hidden" value="${item.imageUrl}">
-					<input name="cardName" type="hidden" value="${item.name}" class="form-control form-text"/>
-					<input name="set" type="hidden" value="${item.setName}" class="form-control form-text"/>
-					<input name="amount" value="1" type="text" class="form-control form-text"/>
-					<button type="submit" id="${item.name}">addCard</button>
-				</div>
-			</form>
+		<table style="width: 100%" class="table table-bordered">
+			<tr>
+				<th width="15%">name</th>
+				<th width="15%">set name</th>
+				<th width="10%">rarity</th>
+				<th width="10%">type</th>
+				<th width="45%">text</th>
+				<th width="5%">remove</th>
 
-			<br>
-		</c:forEach>
-
-		<img id="clicked" src="">
+			</tr>
+			<c:forEach var="element" items="${cardList}">
+				<tr style="font-size: 80%">
+					<td>
+						<a class="card-name" href="${element.imageUrl}"><c:out value="${element.name}"/></a>
+					</td>
+					<td><c:out value="${element.setName}"/></td>
+					<td><c:out value="${element.rarity}"/></td>
+					<td><c:out value="${element.type}"/></td>
+					<td><c:out value="${element.text}"/></td>
+					<td>
+						<form action="/decks/${deck.id}/addCardFromList" method="post">
+							<div class="input-group">
+								<input hidden name="cardName" type="hidden" value="${element.name}"
+									   class="form-control form-text"/>
+								<input name="set" type="hidden" value="${element.setName}"
+									   class="form-control form-text"/>
+								<input name="amount" value="1" type="text" class="form-control form-text">
+								<button type="submit">addCard</button>
+							</div>
+						</form>
+					</td>
+				</tr>
+			</c:forEach>
+		</table>
 	</c:if>
-
-
-	<script type="text/javascript">
-        $(document).ready(function() {
-			$('.img').click(function() {
-			    var id = strReplaceAll($(this).text(), " ", "_");
-            	var input = (document.getElementById(id));
-            	var src = input.value;
-            	$("#clicked").attr('src', src);
-        	});
-        });
-
-        function strReplaceAll(string, Find, Replace) {
-            try {
-                return string.replace( new RegExp(Find, "gi"), Replace );
-            } catch(ex) {
-                return string;
-            }
-        }
-	</script>
 
 	<br>
 	<h3>Cards in buffer:</h3>
+
 	<c:if test="${not empty mapOfCards}">
-		<c:forEach var="entry" items="${mapOfCards}">
-			<br>
-			<form action="/decks/${deck.id}/${entry.key.multiverseid}/removeCardFromBuffer" method="post">
-				Name: <c:out value="${entry.key.name}"/><input name="amount" type="number" value="1" class="form-text"><button type="submit">remove</button>
-			</form>
-			<br>
-			<img src="${entry.key.imageUrl}">
-			<br>
-			amount: <c:out value="${entry.value}"/>
-			<br>
-		</c:forEach>
+		<table style="width: 100%" class="table table-bordered">
+			<tr>
+				<th width="15%">name</th>
+				<th width="5%">amount</th>
+				<th width="15%">set name</th>
+				<th width="10%">rarity</th>
+				<th width="10%">type</th>
+				<th width="40%">text</th>
+				<th width="5%">remove</th>
+
+			</tr>
+			<c:forEach var="entry" items="${mapOfCards}">
+
+				<tr style="font-size: 80%">
+					<td>
+						<a class="card-name" href="${entry.key.imageUrl}"><c:out value="${entry.key.name}"/></a>
+					</td>
+					<td><c:out value="${entry.value}"/></td>
+					<td><c:out value="${entry.key.setName}"/></td>
+					<td><c:out value="${entry.key.rarity}"/></td>
+					<td><c:out value="${entry.key.type}"/></td>
+					<td><c:out value="${entry.key.text}"/></td>
+					<td>
+						<form action="/decks/${deck.id}/${entry.key.multiverseid}/removeCardFromBuffer" method="post">
+							<input name="amount" type="number" value="1" style="width: 100%">
+							<button type="submit">remove</button>
+						</form>
+					</td>
+				</tr>
+			</c:forEach>
+		</table>
 	</c:if>
+
 	<br>
 	<form action="/decks/${deck.id}/updateDeck" method="post">
 		<button type="submit">updateDeck</button>
 	</form>
-	Cards in deck:
-	<c:if test="${not empty deck.cards}">
-		<c:forEach var="entry" items="${deck.cards}">
-			<br>
 
-			<form action="/decks/${deck.id}/${entry.key.multiverseid}/removeCard" method="post">
-				Name: <c:out value="${entry.key.name}"/><input name="amount" type="number" value="1" class="form-text"><button type="submit">remove</button>
-			</form>
-			<br>
-			<img src="${entry.key.imageUrl}">
-			<br>
-			amount: <c:out value="${entry.value}"/>
-			<br>
-		</c:forEach>
+	<h3>Cards in deck:</h3>
+	<c:if test="${not empty deck.cards}">
+		<table style="width: 100%" class="table table-bordered">
+			<tr>
+				<th width="15%">name</th>
+				<th width="5%">amount</th>
+				<th width="15%">set name</th>
+				<th width="10%">rarity</th>
+				<th width="10%">type</th>
+				<th width="40%">text</th>
+				<th width="5%">remove</th>
+
+			</tr>
+			<c:forEach var="entry" items="${deck.cards}">
+
+				<tr style="font-size: 80%">
+					<td>
+						<a class="card-name" href="${entry.key.imageUrl}"><c:out value="${entry.key.name}"/></a>
+					</td>
+					<td><c:out value="${entry.value}"/></td>
+					<td><c:out value="${entry.key.setName}"/></td>
+					<td><c:out value="${entry.key.rarity}"/></td>
+					<td><c:out value="${entry.key.type}"/></td>
+					<td><c:out value="${entry.key.text}"/></td>
+					<td>
+						<form action="/decks/${deck.id}/${entry.key.multiverseid}/removeCard" method="post">
+							<input name="amount" type="number" value="1" style="width: 100%">
+							<button type="submit">remove</button>
+						</form>
+					</td>
+				</tr>
+			</c:forEach>
+		</table>
 	</c:if>
+
+	<%--display card's image--%>
+	<div hidden id="image" class="popover-card popover fade right in"
+		 style=" display: none;">
+		<div class="arrow" style="top: 50%;"></div>
+		<div class="popover-inner">
+			<div class="popover-content"><img id="image-url" src="" height="310" width="223"
+											  style="padding:0;margin:0;"></div>
+		</div>
+	</div>
+
 
 	<c:forEach var="entry" items="${mapOfComparingResult}">
 		<br>
 		Deck Name: <a href="${entry.key.deckUrl}">${entry.key.name}</a>
-			matches: <c:out value="${entry.value}"/>
+		matches:<c:out value="${entry.value}"/>
 		<br>
 	</c:forEach>
 	<c:out value="${message}"/>
+
+	<script type="text/javascript">
+        $(document).ready(function () {
+
+            //shows card image on mouse focus
+            $('.card-name').hover(
+                function () {
+                    var image_url = $(this).attr('href');
+                    var position = $(this).position();
+                    $('#image-url').attr('src', image_url);
+//                  replace positions values with constants
+                    $('#image').css({left: position.left + 120, top: position.top - 155});
+                    $('#image').fadeIn();
+                }, function () {
+                    $('#image').fadeOut();
+                }
+            );
+        });
+
+	</script>
 
 </div>
