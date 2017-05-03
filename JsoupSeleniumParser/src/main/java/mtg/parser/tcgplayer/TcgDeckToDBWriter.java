@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 public class TcgDeckToDBWriter {
 
 	final static String STANDARD_DECKS_URLS_FILENAME = "LIST_OF_STANDARD_DECKS_URLS.txt";
+	final static String MODERN_DECKS_URLS_FILENAME = "LIST_OF_MODERN_DECKS_URLS.txt";
+
 
 	public static Queue<String> deckUrls;
 
@@ -47,7 +49,7 @@ public class TcgDeckToDBWriter {
 	public static Queue<String> readUrlsFromFile() {
 		Queue<String> urls = new ConcurrentLinkedQueue<>();
 		String url;
-		try (InputStream fis = new FileInputStream(STANDARD_DECKS_URLS_FILENAME);
+		try (InputStream fis = new FileInputStream(MODERN_DECKS_URLS_FILENAME);
 				InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
 				BufferedReader br = new BufferedReader(isr);) {
 			while ((url = br.readLine()) != null) {

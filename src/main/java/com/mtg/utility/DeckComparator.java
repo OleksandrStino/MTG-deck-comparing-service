@@ -9,6 +9,7 @@ import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 @Service
 public class DeckComparator {
@@ -20,11 +21,20 @@ public class DeckComparator {
 	public Map<TopDecks, Integer> getCardMatches(Map<Card, Integer> userDeck, List<TopDecks> decksList) {
 		Map<TopDecks, Integer> result = new HashMap<>();
 		for (TopDecks deck : decksList) {
-			Map<String, Integer> existedDeck = convertToMap(deck);
-			for (Map.Entry<String, Integer> comparedCard : existedDeck.entrySet()) {
+			Map<String, String> existedDeck = convertToMap(deck);
+			for (Entry<String, String> comparedCard : existedDeck.entrySet()) {
 				for (Map.Entry<Card, Integer> currentCard : userDeck.entrySet()) {
-					if (comparedCard.getKey().equals(currentCard.getKey().getName())) {
-						count++;
+					if (comparedCard.getKey().trim().equals(currentCard.getKey().getName())) {
+				
+						Integer existingDeckCardAmount = Integer.parseInt(comparedCard.getValue().trim());
+						Integer userDeckCardAmount = currentCard.getValue();
+						
+						if(userDeckCardAmount >= existingDeckCardAmount){
+							count+=existingDeckCardAmount;
+						} else {
+							count+=userDeckCardAmount;
+						}
+										
 					}
 				}
 			}
@@ -38,7 +48,7 @@ public class DeckComparator {
 		return sortByValue(result);
 	}
 
-	private Map<String, Integer> convertToMap(TopDecks deck) {
+	private Map<String, String> convertToMap(TopDecks deck) {
 		JSONObject genreJsonObject = null;
 		try {
 			genreJsonObject = (JSONObject) JSONValue.parseWithException(deck.getDeck());

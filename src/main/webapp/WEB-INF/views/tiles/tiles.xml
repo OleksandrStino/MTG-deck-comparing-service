@@ -24,6 +24,13 @@
         <put-list-attribute name="javascripts" inherit="true">
         </put-list-attribute>
     </definition>
+    
+    <definition name="bulk_add_page" extends="base-definition">
+        <put-attribute name="title" value="Bulk add" />
+        <put-attribute name="body" value="/WEB-INF/views/pages/bulk_add_page.jsp" />
+        <put-list-attribute name="javascripts" inherit="true">
+        </put-list-attribute>
+    </definition>
 
     <definition name="login" extends="base-definition">
         <put-attribute name="title" value="Login" />
