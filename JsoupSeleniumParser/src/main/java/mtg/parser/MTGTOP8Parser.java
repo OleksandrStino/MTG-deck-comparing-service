@@ -58,6 +58,8 @@ public class MTGTOP8Parser {
 
 	private static final int NUMBER_OF_THREADS = 10;
 
+	private static final int NUMBER_OF_THREADS = 10;
+
 	//initialization property file instance
 	static {
 		appProperties = new Properties();
