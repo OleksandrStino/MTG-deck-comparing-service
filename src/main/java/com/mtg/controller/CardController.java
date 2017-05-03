@@ -1,15 +1,10 @@
 package com.mtg.controller;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.mtg.entity.Card;
+import com.mtg.entity.Deck;
+import com.mtg.service.impl.CardServiceImpl;
+import com.mtg.service.impl.DeckServiceImpl;
+import com.mtg.utility.JsonParser;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,11 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.mtg.entity.Card;
-import com.mtg.entity.Deck;
-import com.mtg.service.impl.CardServiceImpl;
-import com.mtg.service.impl.DeckServiceImpl;
-import com.mtg.utility.JsonParser;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
 @Controller
 public class CardController {
@@ -41,9 +35,6 @@ public class CardController {
 
 	@Autowired
 	private JsonParser jsonParser;
-
-	// Map of cards and their amount in buffer before user update his deck
-	private Map<Card, Integer> cards = new HashMap<>();
 
 	@GetMapping("/decks/{deckId}/bulkAdd")
 	public String bulkAddRedirect(@PathVariable Long deckId, RedirectAttributes redirectAttributes, Model model) {
@@ -76,7 +67,6 @@ public class CardController {
 					for (int i = amount; i > 0; i--) {
 						cardService.addCard(newCard);
 					}
-					cardService.comparingOfAddedAndExistedCardsInSession(cards, newCard, amount);
 
 				} else {
 
@@ -97,7 +87,6 @@ public class CardController {
 						for (int i = amount; i > 0; i--) {
 							cardService.addCard(newCard);
 						}
-						cardService.comparingOfAddedAndExistedCardsInSession(cards, newCard, amount);
 
 					} else {
 						errorLines.add(currentLine);
@@ -110,7 +99,6 @@ public class CardController {
 			}
 
 		}
-		request.getSession().setAttribute("mapOfCards", cards);
 		if(errorLines.isEmpty()){
 			return "redirect:" + request.getContextPath() + "/decks/" + deckId;
 		}
@@ -123,6 +111,7 @@ public class CardController {
 	public String addCard(@RequestParam String cardName, @RequestParam Integer amount, @PathVariable Long deckId,
 			RedirectAttributes redirectAttributes, HttpServletRequest request) {
 		String url = CARD_NAME_URL.concat(cardName.replaceAll(" ", "_"));
+		Deck deck = deckService.findById(deckId);
 
 		try {
 			// get Cards from URL
@@ -137,8 +126,7 @@ public class CardController {
 			if (cardList.size() == 1) {
 				Card newCard = (Card) cardList.toArray()[0];
 				cardService.addCard(newCard);
-				cardService.comparingOfAddedAndExistedCardsInSession(cards, newCard, amount);
-
+				deckService.editDeck(deck, newCard, amount);
 			} else {
 				logger.info("added card list: " + cardList);
 				// add list of cards with same name or with different sets
@@ -148,7 +136,6 @@ public class CardController {
 			logger.error(e.getMessage());
 		}
 
-		request.getSession().setAttribute("mapOfCards", cards);
 		return "redirect:" + request.getContextPath() + "/decks/" + deckId;
 	}
 
@@ -164,26 +151,13 @@ public class CardController {
 				// it to the deck and card db tables
 				if (choosenCard.getSetName().equals(set)) {
 					cardService.addCard(choosenCard);
-					cardService.comparingOfAddedAndExistedCardsInSession(cards, choosenCard, amount);
+					deckService.editDeck(deckService.findById(deckId), choosenCard, amount);
 				}
 			});
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
 
-		request.getSession().setAttribute("mapOfCards", cards);
-		return "redirect: /decks/" + deckId;
-	}
-
-	@PostMapping("/decks/{deckId}/updateDeck")
-	public String updateDeck(@PathVariable Long deckId, HttpServletRequest request) {
-		Deck deck = deckService.findById(deckId);
-		Map<Card, Integer> mapOfCards = (Map<Card, Integer>) request.getSession().getAttribute("mapOfCards");
-		logger.info("map Of cards: " + mapOfCards);
-		if (null != mapOfCards) {
-			deckService.editDeck(deck, mapOfCards);
-			mapOfCards.clear();
-		}
 		return "redirect: /decks/" + deckId;
 	}
 
@@ -200,19 +174,6 @@ public class CardController {
 			currentDeckCards.put(card, amountOfSameCards - amount);
 		}
 		deckService.updateDeckCards(deck, currentDeckCards);
-		return "redirect: /decks/" + deckId;
-	}
-
-	@PostMapping("/decks/{deckId}/{cardId}/removeCardFromBuffer")
-	public String removeCardFromBuffer(@PathVariable Long deckId, @PathVariable Long cardId,
-			@RequestParam Integer amount) {
-		Card card = cardService.findByMultiverseid(cardId);
-		Integer amountOfSameCards = cards.get(card);
-		if (amount >= amountOfSameCards) {
-			cards.remove(card);
-		} else {
-			cards.put(card, amountOfSameCards - amount);
-		}
 		return "redirect: /decks/" + deckId;
 	}
 

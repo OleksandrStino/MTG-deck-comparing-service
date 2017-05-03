@@ -9,10 +9,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class DeckServiceImpl implements DeckService {
@@ -53,15 +52,29 @@ public class DeckServiceImpl implements DeckService {
 	}
 
 	@Override
-	public Deck editDeck(Deck deck, Map<Card, Integer> cards) {
+	public Deck editDeck(Deck deck, Card card, Integer amount) {
 		Map<Card, Integer> deckCards = deck.getCards();
 
 		if (deckCards.isEmpty()) {
-			deck.setCards(cards);
+			Map<Card, Integer> newDeck = new HashMap<>();
+			newDeck.put(card, amount);
+			deck.setCards(newDeck);
 		} else {
-			Map<Card, Integer> resultMap = Stream.concat(deckCards.entrySet().stream(), cards.entrySet().stream())
-					.collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingInt(Map.Entry::getValue)));
-			 deck.setCards(resultMap);
+			Map<Card, Integer> resultMap = new HashMap<>();
+			boolean isAdded = false;
+			for (Map.Entry<Card, Integer> entry : deckCards.entrySet()) {
+				if (card.equals(entry.getKey())) {
+					resultMap.put(entry.getKey(), amount + entry.getValue());
+					isAdded = true;
+				} else {
+					resultMap.put(entry.getKey(), entry.getValue());
+				}
+			}
+			if(!isAdded){
+				resultMap.put(card, amount);
+			}
+			logger.info("RESULT MAO IS: " + resultMap);
+			deck.setCards(resultMap);
 		}
 
 		return deckRepository.saveAndFlush(deck);

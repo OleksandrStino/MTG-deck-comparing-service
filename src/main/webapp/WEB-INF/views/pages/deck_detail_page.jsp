@@ -64,60 +64,17 @@
 		</table>
 	</c:if>
 
-	<br>
-	<h3>Cards in buffer:</h3>
-
-	<c:if test="${not empty mapOfCards}">
-		<table style="width: 100%" class="table table-bordered">
-			<tr>
-				<th width="15%">name</th>
-				<th width="5%">amount</th>
-				<th width="15%">set name</th>
-				<th width="10%">rarity</th>
-				<th width="10%">type</th>
-				<th width="40%">text</th>
-				<th width="5%">remove</th>
-
-			</tr>
-			<c:forEach var="entry" items="${mapOfCards}">
-
-				<tr style="font-size: 80%">
-					<td>
-						<a class="card-name" href="${entry.key.imageUrl}"><c:out value="${entry.key.name}"/></a>
-					</td>
-					<td><c:out value="${entry.value}"/></td>
-					<td><c:out value="${entry.key.setName}"/></td>
-					<td><c:out value="${entry.key.rarity}"/></td>
-					<td><c:out value="${entry.key.type}"/></td>
-					<td><c:out value="${entry.key.text}"/></td>
-					<td>
-						<form action="/decks/${deck.id}/${entry.key.multiverseid}/removeCardFromBuffer" method="post">
-							<input name="amount" type="number" value="1" style="width: 100%">
-							<button type="submit">remove</button>
-						</form>
-					</td>
-				</tr>
-			</c:forEach>
-		</table>
-	</c:if>
-
-	<br>
-	<form action="/decks/${deck.id}/updateDeck" method="post">
-		<button type="submit">updateDeck</button>
-	</form>
-
 	<h3>Cards in deck:</h3>
 	<c:if test="${not empty deck.cards}">
 		<table style="width: 100%" class="table table-bordered">
 			<tr>
-				<th width="15%">name</th>
+				<th width="15%" class="name">name</th>
 				<th width="5%">amount</th>
 				<th width="15%">set name</th>
 				<th width="10%">rarity</th>
 				<th width="10%">type</th>
 				<th width="40%">text</th>
 				<th width="5%">remove</th>
-
 			</tr>
 			<c:forEach var="entry" items="${deck.cards}">
 
@@ -168,9 +125,10 @@
                 function () {
                     var image_url = $(this).attr('href');
                     var position = $(this).position();
+                    var width = $(this).width();
                     $('#image-url').attr('src', image_url);
 //                  replace positions values with constants
-                    $('#image').css({left: position.left + 120, top: position.top - 155});
+                    $('#image').css({left: position.left + width + 5, top: position.top - 158});
                     $('#image').fadeIn();
                 }, function () {
                     $('#image').fadeOut();
