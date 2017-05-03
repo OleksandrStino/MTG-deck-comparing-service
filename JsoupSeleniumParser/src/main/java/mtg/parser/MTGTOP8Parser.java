@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class JsoupParser {
+public class MTGTOP8Parser {
 
 	//selenium settings
 	private static final String CHROMEDRIVER_PATHNAME = "C:/Users/owner/Downloads/chromedriver.exe";
@@ -56,6 +56,8 @@ public class JsoupParser {
 
 	private static Queue<String> queue = getURLListFromURLsWithDecks("http://mtgtop8.com/format?f=MO&meta=44");
 
+	private static final int NUMBER_OF_THREADS = 10;
+
 	//initialization property file instance
 	static {
 		appProperties = new Properties();
@@ -69,12 +71,9 @@ public class JsoupParser {
 
 
 	public static void main(String[] args) {
-		System.out.println(queue.toString());
-		System.out.println(queue.size());
-
 		long l = System.currentTimeMillis();
-		ExecutorService executor = Executors.newFixedThreadPool(10);
-		for (int i = 0; i < 10; i++) {
+		ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+		for (int i = 0; i < NUMBER_OF_THREADS; i++) {
 			executor.submit(() -> {
 				String poll;
 				while ((poll = queue.poll()) != null) {
@@ -91,7 +90,6 @@ public class JsoupParser {
 
 
 	/**
-	 *
 	 * @param url
 	 * @return
 	 */
@@ -102,11 +100,11 @@ public class JsoupParser {
 			Elements stable = document.getElementsByClass("Stable");
 			Element element = stable.get(0);
 			Elements tableRow = element.getElementsByClass("hover_tr");
-			for(Element row : tableRow){
+			for (Element row : tableRow) {
 				Elements tds = row.getElementsByTag("td");
 				String urlRow = tds.get(0).getElementsByTag("a").attr("href");
 				Integer amount = Integer.valueOf(tds.get(1).html());
-				int pages = (int) Math.ceil(amount/20.0);
+				int pages = (int) Math.ceil(amount / 20.0);
 				queue.add(ROOT_PATH_OF_WEBSITE.concat(urlRow) + " " + pages + " " + COMPETITION);
 			}
 		} catch (IOException e) {
@@ -141,7 +139,6 @@ public class JsoupParser {
 			e.printStackTrace();
 		}
 		driver.close();
-
 	}
 
 	/**
