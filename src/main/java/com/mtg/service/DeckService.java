@@ -20,7 +20,9 @@ public interface DeckService {
 
 	Deck findByName(String name);
 
-	Deck editDeck(Deck deck, Card card, Integer amount);
+	Deck addCard(Deck deck, Card card, Integer amount);
+
+	Deck addCollectionOfCards(Deck deck, Map<Card, Integer> cards);
 
 	List<Deck> getAll();
 

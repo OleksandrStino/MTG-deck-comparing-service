@@ -45,9 +45,10 @@ public class CardController {
 
 	@PostMapping("/decks/{deckId}/bulkAdd")
 	public String bulkAdd(@RequestParam String cardRows, @PathVariable Long deckId,
-			RedirectAttributes redirectAttributes, Model model, HttpServletRequest request) {
+						  RedirectAttributes redirectAttributes, Model model, HttpServletRequest request) {
 		model.addAttribute("deckId", deckId);
 		List<String> errorLines = new ArrayList<>();
+		Map<Card, Integer> cards = new HashMap<>();
 		Deck deck = deckService.findById(deckId);
 		String[] lines = cardRows.split(System.getProperty("line.separator"));
 		for (String currentLine : lines) {
@@ -66,8 +67,8 @@ public class CardController {
 					System.out.println("Found 1 card" + cardName);
 					Card newCard = (Card) cardList.toArray()[0];
 					cardService.addCard(newCard);
-					deckService.editDeck(deck, newCard, amount);
-				
+					cards.put(newCard, amount);
+
 
 				} else {
 
@@ -85,9 +86,9 @@ public class CardController {
 					if (sameCards) {
 
 						Card newCard = (Card) cardList.toArray()[0];
-							cardService.addCard(newCard);
-							deckService.editDeck(deck, newCard, amount);
-					
+						cardService.addCard(newCard);
+						cards.put(newCard, amount);
+
 
 					} else {
 						errorLines.add(currentLine);
@@ -98,7 +99,8 @@ public class CardController {
 			}
 
 		}
-		if(errorLines.isEmpty()){
+		deckService.addCollectionOfCards(deck, cards);
+		if (errorLines.isEmpty()) {
 			return "redirect:" + request.getContextPath() + "/decks/" + deckId;
 		}
 		model.addAttribute("errorLines", errorLines);
@@ -108,7 +110,7 @@ public class CardController {
 
 	@PostMapping("/decks/{deckId}/addCard")
 	public String addCard(@RequestParam String cardName, @RequestParam Integer amount, @PathVariable Long deckId,
-			RedirectAttributes redirectAttributes, HttpServletRequest request) {
+						  RedirectAttributes redirectAttributes, HttpServletRequest request) {
 		String url = CARD_NAME_URL.concat(cardName.replaceAll(" ", "_"));
 		Deck deck = deckService.findById(deckId);
 
@@ -125,7 +127,7 @@ public class CardController {
 			if (cardList.size() == 1) {
 				Card newCard = (Card) cardList.toArray()[0];
 				cardService.addCard(newCard);
-				deckService.editDeck(deck, newCard, amount);
+				deckService.addCard(deck, newCard, amount);
 			} else {
 				logger.info("added card list: " + cardList);
 				// add list of cards with same name or with different sets
@@ -140,7 +142,7 @@ public class CardController {
 
 	@PostMapping("/decks/{deckId}/addCardFromList")
 	public String addCardFromList(@RequestParam String cardName, @RequestParam Integer amount, @RequestParam String set,
-			@PathVariable Long deckId, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+								  @PathVariable Long deckId, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 		String url = CARD_NAME_URL.concat(cardName.replaceAll(" ", "_"));
 
 		try {
@@ -150,7 +152,7 @@ public class CardController {
 				// it to the deck and card db tables
 				if (choosenCard.getSetName().equals(set)) {
 					cardService.addCard(choosenCard);
-					deckService.editDeck(deckService.findById(deckId), choosenCard, amount);
+					deckService.addCard(deckService.findById(deckId), choosenCard, amount);
 				}
 			});
 		} catch (IOException e) {
@@ -162,7 +164,7 @@ public class CardController {
 
 	@PostMapping("/decks/{deckId}/{cardId}/removeCard")
 	public String removeCardFromDeck(@PathVariable Long deckId, @PathVariable Long cardId,
-			@RequestParam Integer amount) {
+									 @RequestParam Integer amount) {
 		Deck deck = deckService.findById(deckId);
 		Map<Card, Integer> currentDeckCards = deck.getCards();
 		Card card = cardService.findByMultiverseid(cardId);

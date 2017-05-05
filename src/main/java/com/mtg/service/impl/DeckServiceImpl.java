@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class DeckServiceImpl implements DeckService {
@@ -52,7 +54,7 @@ public class DeckServiceImpl implements DeckService {
 	}
 
 	@Override
-	public Deck editDeck(Deck deck, Card card, Integer amount) {
+	public Deck addCard(Deck deck, Card card, Integer amount) {
 		Map<Card, Integer> deckCards = deck.getCards();
 
 		if (deckCards.isEmpty()) {
@@ -74,6 +76,21 @@ public class DeckServiceImpl implements DeckService {
 				resultMap.put(card, amount);
 			}
 			logger.info("RESULT MAO IS: " + resultMap);
+			deck.setCards(resultMap);
+		}
+
+		return deckRepository.saveAndFlush(deck);
+	}
+
+	@Override
+	public Deck addCollectionOfCards(Deck deck, Map<Card, Integer> cards) {
+		Map<Card, Integer> deckCards = deck.getCards();
+
+		if (deckCards.isEmpty()) {
+			deck.setCards(cards);
+		} else {
+			Map<Card, Integer> resultMap = Stream.concat(deckCards.entrySet().stream(), cards.entrySet().stream())
+					.collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingInt(Map.Entry::getValue)));
 			deck.setCards(resultMap);
 		}
 
