@@ -92,9 +92,7 @@ public class CardController {
 					} else {
 						errorLines.add(currentLine);
 					}
-
 				}
-
 			} catch (IOException e) {
 				logger.error(e.getMessage());
 			}
