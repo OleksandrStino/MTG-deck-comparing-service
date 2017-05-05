@@ -57,18 +57,25 @@ public class JsonParser {
 			logger.info("card Json:" + cardJsonObject);
 			Long multiverseid = (Long) cardJson.get("multiverseid");
 			logger.info("multiverseid: " + multiverseid);
-			if(null == multiverseid){
+			if (null == multiverseid) {
 				continue;
 			}
 			Card card = new Card();
 			card.setMultiverseid(multiverseid);
 			card.setName((String) cardJson.get("name"));
 			card.setImageUrl((String) cardJson.get("imageUrl"));
-			card.setType((String) cardJson.get("type"));
+			card.setType(((String) cardJson.get("type")).replaceAll("â€”", "-"));
 			card.setRarity((String) cardJson.get("rarity"));
 			card.setSetName((String) cardJson.get("setName"));
 			card.setText((String) cardJson.get("text"));
+			card.setSet((String) cardJson.get("set"));
+			String manaCost = (String) cardJson.get("manaCost");
+			if (null != manaCost) {
+				card.setManaCost(manaCost.replaceAll("[{, }]", " ").trim());
+			}
+//			card.setLegality((String) cardJson.get("legalities"));
 			cardsList.add(card);
+			logger.info("Parsed card :" + card);
 		}
 
 		return cardsList;
