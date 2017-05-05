@@ -45,10 +45,10 @@ public class DeckToDBWriter {
 	public static Queue<String> readUrlsFromFile() {
 		Queue<String> urls = new ConcurrentLinkedQueue<>();
 		String url;
-		try (InputStream fis = new FileInputStream(MODERN_DECKS_URLS_FILENAME);
-			InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
-			BufferedReader br = new BufferedReader(isr);) {
-			
+		try (InputStream fis = new FileInputStream(STANDARD_DECKS_URLS_FILENAME);
+				InputStreamReader isr = new InputStreamReader(fis, Charset.forName("UTF-8"));
+				BufferedReader br = new BufferedReader(isr);) {
+
 			while ((url = br.readLine()) != null) {
 				urls.add(url);
 			}

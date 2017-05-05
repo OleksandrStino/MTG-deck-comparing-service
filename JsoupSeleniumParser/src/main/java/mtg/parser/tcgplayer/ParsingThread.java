@@ -19,9 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ParsingThread implements Runnable {
 
-	private static Connection connection;
-	private static PreparedStatement preparedStatement;
-	private static String sql = "INSERT INTO existed_decks (name, deck, event, deck_url, rank) VALUES (?, ?, ?, ?, ?);";
+	private static String sql = "INSERT INTO existing_decks (name, deck, event, deck_url, rank, format) VALUES (?, ?, ?, ?, ?, ?);";
 
 	private static final String URL_PREFIX = "http://decks.tcgplayer.com";
 
@@ -73,7 +71,7 @@ public class ParsingThread implements Runnable {
 			String jsonDeck = "";
 			Map<String, String> deck = new HashMap<>();
 			try {
-				System.out.println("Connecting to url + " + deckUrl);
+				System.out.println("Connecting to url + " + fullUrl);
 				deckPage = Jsoup.connect(fullUrl).get();
 				String deckName = deckPage.select("h1").text() + " " + deckPage.select("h3").first().text();
 				deckInfo[1] = deckName;
@@ -91,6 +89,7 @@ public class ParsingThread implements Runnable {
 				deckInfo[3] = jsonDeck;
 			} catch (IOException e) {
 				System.out.println(Thread.currentThread().getName() + " Got exception return URL to Queue");
+				DeckToDBWriter.addDeckUrl(deckUrl); 
 				e.printStackTrace();
 				continue;
 			}
@@ -103,24 +102,7 @@ public class ParsingThread implements Runnable {
 				e.printStackTrace();
 			}
 
-			if (preparedStatement != null) {
-				try {
-					System.out.println(Thread.currentThread().getName() + " closing statement");
-					preparedStatement.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-
-			if (connection != null) {
-				try {
-					System.out.println(Thread.currentThread().getName() + " closing connection");
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-
+		
 		}
 		System.out.println(Thread.currentThread().getName() + " Thread finished!");
 
@@ -129,9 +111,9 @@ public class ParsingThread implements Runnable {
 	private static void writeDataToDB(String[] deckInfo) throws ClassNotFoundException {
 
 		System.out.println(Thread.currentThread().getName() + " getting connection");
-		try {
-			connection = getJDBCConnection();
-			preparedStatement = connection.prepareStatement(sql);
+		try (Connection connection = getJDBCConnection();
+				PreparedStatement preparedStatement = connection.prepareStatement(sql);){
+			
 
 			System.out.println(Thread.currentThread().getName() + " Connection: " + connection + " Statement: "
 					+ preparedStatement);
@@ -140,12 +122,13 @@ public class ParsingThread implements Runnable {
 			preparedStatement.setString(3, deckInfo[2]);
 			preparedStatement.setString(4, deckInfo[0]);
 			preparedStatement.setString(5, " ");
+			preparedStatement.setString(6, "Standard");
 			preparedStatement.executeUpdate();
 			System.out.println("Record created successfully");
 
 		} catch (SQLException e) {
 			System.out.println(Thread.currentThread().getName() + " could not write to DB returning URL to Queue");
-			/* TcgDeckToDBWriter.deckUrls.add(deckInfo[0]); */
+			DeckToDBWriter.addDeckUrl(deckInfo[0].substring(26)); 
 			e.printStackTrace();
 		}
 

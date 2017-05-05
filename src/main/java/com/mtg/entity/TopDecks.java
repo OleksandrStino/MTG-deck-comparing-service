@@ -27,9 +27,6 @@ public class TopDecks {
 
 	@Column
 	private String rank;
-	
-	@Column
-	private String format;
 
 	@Column(name = "deck_url")
 	private String deckUrl;

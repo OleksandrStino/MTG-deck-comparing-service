@@ -9,6 +9,8 @@
 	<form action="/decks/${deck.id}/compareDeck" method="post">
 		<button type="submit">compare</button>
 	</form>
+	
+	<a href="/decks/${deck.id}/bulkAdd">Bulk add</a>
 
 	<h1>${deck.name} page</h1>
 
@@ -128,6 +130,7 @@
 		<br>
 		Deck Name: <a href="${entry.key.deckUrl}">${entry.key.name}</a>
 		matches:<c:out value="${entry.value}"/>
+		Format:<c:out value="${entry.key.format}"/>
 		<br>
 	</c:forEach>
 	<c:out value="${message}"/>

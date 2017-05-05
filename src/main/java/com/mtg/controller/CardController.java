@@ -48,6 +48,7 @@ public class CardController {
 			RedirectAttributes redirectAttributes, Model model, HttpServletRequest request) {
 		model.addAttribute("deckId", deckId);
 		List<String> errorLines = new ArrayList<>();
+		Deck deck = deckService.findById(deckId);
 		String[] lines = cardRows.split(System.getProperty("line.separator"));
 		for (String currentLine : lines) {
 
@@ -64,9 +65,9 @@ public class CardController {
 				} else if (cardList.size() == 1) {
 					System.out.println("Found 1 card" + cardName);
 					Card newCard = (Card) cardList.toArray()[0];
-					for (int i = amount; i > 0; i--) {
-						cardService.addCard(newCard);
-					}
+					cardService.addCard(newCard);
+					deckService.editDeck(deck, newCard, amount);
+				
 
 				} else {
 
@@ -84,9 +85,9 @@ public class CardController {
 					if (sameCards) {
 
 						Card newCard = (Card) cardList.toArray()[0];
-						for (int i = amount; i > 0; i--) {
 							cardService.addCard(newCard);
-						}
+							deckService.editDeck(deck, newCard, amount);
+					
 
 					} else {
 						errorLines.add(currentLine);
