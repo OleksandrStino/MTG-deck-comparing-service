@@ -17,6 +17,12 @@
         <put-attribute name="title" value="Welcome" />
         <put-attribute name="body" value="/WEB-INF/views/pages/index.jsp" />
     </definition>
+    
+        <definition name="compare" extends="base-definition">
+        <put-attribute name="title" value="Compare deck" />
+        <put-attribute name="body" value="/WEB-INF/views/pages/compare.jsp" />
+    </definition>
+    
 
     <definition name="deck_detail_page" extends="base-definition">
         <put-attribute name="title" value="Deck details" />

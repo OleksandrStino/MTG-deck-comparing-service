@@ -5,10 +5,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <div class="container">
-
-	<form action="/decks/${deck.id}/compareDeck" method="post">
-		<button type="submit">compare</button>
-	</form>
+	
+	<a href="/decks/${deck.id}/compareDeck">Compare</a>
 	
 	<a href="/decks/${deck.id}/bulkAdd">Bulk add</a>
 

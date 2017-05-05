@@ -72,13 +72,13 @@ public class DeckController {
 		return "redirect:/";
 	}
 
-	@PostMapping("/decks/{deckId}/compareDeck")
-	public String compareDeck(@PathVariable Long deckId, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+	@GetMapping("/decks/{deckId}/compareDeck")
+	public String compareDeck(@PathVariable Long deckId, Model model, HttpServletRequest request) {
 		Deck deck = deckService.findById(deckId);
 		List<TopDecks> topDecks = existedDecksService.findAll();
 		Map<TopDecks, Integer> mapOfComparingResult = deckComparator.getCardMatches(deck.getCards(), topDecks);
-		redirectAttributes.addFlashAttribute("mapOfComparingResult", mapOfComparingResult);
-		return "redirect:" + request.getContextPath() + "/decks/" + deckId;
+		model.addAttribute("mapOfComparingResult", mapOfComparingResult);
+		return "compare";
 	}
 
 }
