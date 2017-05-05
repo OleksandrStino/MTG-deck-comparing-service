@@ -17,11 +17,13 @@ import org.jsoup.select.Elements;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class TcgParsingThread implements Runnable {
+public class ParsingThread implements Runnable {
 
 	private static Connection connection;
 	private static PreparedStatement preparedStatement;
 	private static String sql = "INSERT INTO existed_decks (name, deck, event, deck_url, rank) VALUES (?, ?, ?, ?, ?);";
+
+	private static final String URL_PREFIX = "http://decks.tcgplayer.com";
 
 	// Keys from app.properties
 	private static final String PROP_DATABASE_DRIVER = "db.driver";
@@ -48,7 +50,7 @@ public class TcgParsingThread implements Runnable {
 		System.out.println(Thread.currentThread().getName() + " starting run methor");
 		String deckUrl;
 		while (true) {
-			deckUrl = TcgDeckToDBWriter.deckUrls.poll();
+			deckUrl = DeckToDBWriter.getNextUrl();
 			if (deckUrl == null) {
 				try {
 					System.out.println(Thread.currentThread().getName() + " waiting for some data");
@@ -56,22 +58,22 @@ public class TcgParsingThread implements Runnable {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				deckUrl = TcgDeckToDBWriter.deckUrls.poll();
+				deckUrl = DeckToDBWriter.getNextUrl();
 			}
 
 			if (deckUrl == null) {
 				break;
 			}
 			System.out.println(Thread.currentThread().getName() + " got URL: " + deckUrl);
-			System.out.println(TcgDeckToDBWriter.deckUrls.size() + " left");
 			String[] deckInfo = new String[4];
-			String fullUrl = "http://decks.tcgplayer.com" + deckUrl;
-			System.out.println("Connecting to url + " + deckUrl);
+			String fullUrl = URL_PREFIX + deckUrl;
+			deckInfo[0] = fullUrl;
+
 			Document deckPage;
 			String jsonDeck = "";
 			Map<String, String> deck = new HashMap<>();
-			deckInfo[0] = fullUrl;
 			try {
+				System.out.println("Connecting to url + " + deckUrl);
 				deckPage = Jsoup.connect(fullUrl).get();
 				String deckName = deckPage.select("h1").text() + " " + deckPage.select("h3").first().text();
 				deckInfo[1] = deckName;
@@ -87,11 +89,9 @@ public class TcgParsingThread implements Runnable {
 
 				jsonDeck = (new ObjectMapper().writeValueAsString(deck)).replaceAll("'", "''");
 				deckInfo[3] = jsonDeck;
-				// System.out.println(cardElements);
 			} catch (IOException e) {
 				System.out.println(Thread.currentThread().getName() + " Got exception return URL to Queue");
 				e.printStackTrace();
-				/*TcgDeckToDBWriter.deckUrls.add(deckUrl);*/
 				continue;
 			}
 
@@ -126,41 +126,10 @@ public class TcgParsingThread implements Runnable {
 
 	}
 
-/*	private void writeDeckToFile(String[] deckInfo) {
-
-		try {
-			FileWriter fw = new FileWriter("STANDARD_DECKS.txt", true);
-			BufferedWriter bw = new BufferedWriter(fw);
-			PrintWriter out = new PrintWriter(bw);
-			out.println(deckInfo[0] + " " + deckInfo[1] + " " + deckInfo[2] + " " + deckInfo[3]);
-			out.close();
-		} catch (IOException e) {
-			System.out.println("Problems with file");
-		}
-
-	}*/
-
 	private static void writeDataToDB(String[] deckInfo) throws ClassNotFoundException {
 
-		/*
-		 * try { if (connection == null || preparedStatement == null ||
-		 * connection.isClosed() || preparedStatement.isClosed()) {
-		 * System.out.println(Thread.currentThread().getName() +
-		 * " initializing new connection"); try { connection =
-		 * getJDBCConnection(); connection.setAutoCommit(false);
-		 * preparedStatement = connection.prepareStatement(sql); } catch
-		 * (Exception e) { System.err.println("error for deck: " + deckInfo[1]);
-		 * e.printStackTrace(); } } } catch (SQLException e1) {
-		 * System.out.println(Thread.currentThread().getName() +
-		 * " could not obtain connection"); }
-		 */
-
-		System.out.println(Thread.currentThread().getName() + " getting already created connection");
+		System.out.println(Thread.currentThread().getName() + " getting connection");
 		try {
-			/*
-			 * connection.clearWarnings(); preparedStatement.clearParameters();
-			 */
-
 			connection = getJDBCConnection();
 			preparedStatement = connection.prepareStatement(sql);
 
@@ -173,10 +142,10 @@ public class TcgParsingThread implements Runnable {
 			preparedStatement.setString(5, " ");
 			preparedStatement.executeUpdate();
 			System.out.println("Record created successfully");
-		
+
 		} catch (SQLException e) {
 			System.out.println(Thread.currentThread().getName() + " could not write to DB returning URL to Queue");
-			/*TcgDeckToDBWriter.deckUrls.add(deckInfo[0]);*/
+			/* TcgDeckToDBWriter.deckUrls.add(deckInfo[0]); */
 			e.printStackTrace();
 		}
 
