@@ -5,35 +5,52 @@
 
 <html>
 
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-		<title><tiles:getAsString name="title"/></title>
-		<link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"/>
-		<link href="<c:url value='/static/css/header.css' />" rel="stylesheet"/>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title><tiles:getAsString name="title"/></title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+		  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-		<script
-				src="https://code.jquery.com/jquery-2.2.4.min.js"
-				integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-				crossorigin="anonymous"></script>
-		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-		<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-	</head>
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+		  integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
-	<body>
-		<header id="header">
-			<tiles:insertAttribute name="header"/>
-		</header>
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+			integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+			crossorigin="anonymous"></script>
+	<link href="<c:url value='/static/css/header.css' />" rel="stylesheet"/>
 
-		<section id="sidemenu">
-			<tiles:insertAttribute name="menu"/>
-		</section>
+	<%--set icons--%>
+	<link href="//cdn.jsdelivr.net/keyrune/latest/css/keyrune.css" rel="stylesheet" type="text/css"/>
 
-		<section id="site-content">
-			<tiles:insertAttribute name="body"/>
-		</section>
+	<%--mana icons--%>
+	<link href="/static/css/mana.css" rel="stylesheet" type="text/css"/>
 
-		<footer id="footer">
-			<tiles:insertAttribute name="footer"/>
-		</footer>
-	</body>
+	<script
+			src="https://code.jquery.com/jquery-2.2.4.min.js"
+			integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+			crossorigin="anonymous"></script>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+</head>
+
+<body>
+<header id="header">
+	<tiles:insertAttribute name="header"/>
+</header>
+
+<section id="sidemenu">
+	<tiles:insertAttribute name="menu"/>
+</section>
+
+<section id="site-content">
+	<tiles:insertAttribute name="body"/>
+</section>
+
+<footer id="footer">
+	<tiles:insertAttribute name="footer"/>
+</footer>
+</body>
 </html>
