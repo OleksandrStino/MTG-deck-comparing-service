@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "app_user")
+@Table(name = "app_users")
 public class User {
 
 	@Id
@@ -16,7 +16,6 @@ public class User {
 
 	@Column
 	private boolean enabled;
-
 
 	@Column
 	private String role;

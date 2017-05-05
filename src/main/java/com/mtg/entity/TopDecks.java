@@ -5,7 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "existed_decks")
+@Table(name = "existing_decks")
 public class TopDecks {
 
 	@Id
@@ -18,6 +18,9 @@ public class TopDecks {
 
 	@Column
 	private String deck;
+
+	@Column
+	private String format;
 
 	@Column
 	private String event;
@@ -76,12 +79,21 @@ public class TopDecks {
 		this.deckUrl = deckUrl;
 	}
 
+	public String getFormat() {
+		return format;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
+	}
+
 	@Override
 	public String toString() {
 		return "TopDecks{" +
 				"id=" + id +
 				", name='" + name + '\'' +
 				", deck='" + deck + '\'' +
+				", format='" + format + '\'' +
 				", event='" + event + '\'' +
 				", rank='" + rank + '\'' +
 				", deckUrl='" + deckUrl + '\'' +

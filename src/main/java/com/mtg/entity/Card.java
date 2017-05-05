@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "card")
+@Table(name = "cards")
 public class Card {
 
 	@Id
@@ -24,11 +24,21 @@ public class Card {
 	@Column
 	private String rarity;
 
-	@Column(name = "set")
+	@Column(name = "set_name")
 	private String setName;
 
 	@Column
+	private String set;
+
+	@Column
+	private String legality;
+
+	@Column
 	private String text;
+
+	@Column(name = "mana_cost")
+	private String manaCost;
+
 
 	public Card() {
 	}
@@ -89,6 +99,30 @@ public class Card {
 		this.text = text;
 	}
 
+	public String getSet() {
+		return set;
+	}
+
+	public void setSet(String set) {
+		this.set = set;
+	}
+
+	public String getLegality() {
+		return legality;
+	}
+
+	public void setLegality(String legality) {
+		this.legality = legality;
+	}
+
+	public String getManaCost() {
+		return manaCost;
+	}
+
+	public void setManaCost(String manaCost) {
+		this.manaCost = manaCost;
+	}
+
 	@Override
 	public String toString() {
 		return "Card{" +
@@ -98,7 +132,10 @@ public class Card {
 				", type='" + type + '\'' +
 				", rarity='" + rarity + '\'' +
 				", setName='" + setName + '\'' +
+				", set='" + set + '\'' +
+				", legality='" + legality + '\'' +
 				", text='" + text + '\'' +
+				", manaCost='" + manaCost + '\'' +
 				'}';
 	}
 

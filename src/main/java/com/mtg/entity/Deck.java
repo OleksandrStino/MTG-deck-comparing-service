@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Map;
 
 @Entity
-@Table(name = "deck")
+@Table(name = "decks")
 public class Deck {
 
 	@Id
@@ -18,7 +18,7 @@ public class Deck {
 	private String name;
 
 	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = "card_deck",
+	@CollectionTable(name = "card_decks",
 			joinColumns = @JoinColumn(name = "deck_id"))
 	@MapKeyJoinColumn(name = "card_id")
 	@Column(name = "count")
