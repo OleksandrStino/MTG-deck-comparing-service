@@ -1,0 +1,12 @@
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        version="2.0">
+
+    <tlib-version>2.0</tlib-version>
+    <short-name>mtg</short-name>
+    <uri>http://www.mtg.com/tags</uri>
+    <function>
+        <name>parseManaCost</name>
+        <function-class>com.mtg.utility.tags.JstlMtgParser</function-class>
+        <function-signature>java.lang.String parseManaCost(java.lang.String)</function-signature>
+    </function>
+</taglib>
