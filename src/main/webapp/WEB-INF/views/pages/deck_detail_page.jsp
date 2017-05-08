@@ -30,7 +30,7 @@
 
 	<h3>List of cards with same name</h3>
 	<c:if test="${not empty cardList}">
-		<table style="width: 100%" class="table table-bordered">
+		<table style="width: 100%" id="search-cards-result" class="table table-bordered">
 			<tr>
 				<th class="text-center" width="15%">name</th>
 				<th class="text-center" width="5%">set</th>
@@ -41,7 +41,7 @@
 
 			</tr>
 			<c:forEach var="element" items="${cardList}">
-				<tr style="font-size: 80%">
+				<tr style="font-size: 80%" class="found-card">
 					<td class="text-center">
 						<a class="card-name" href="${element.imageUrl}"><c:out value="${element.name}"/></a>
 					</td>
@@ -71,11 +71,47 @@
 				</tr>
 			</c:forEach>
 		</table>
+		<div id="page-nav-found-cards"></div>
 	</c:if>
+
+	<script type="text/javascript">
+        jQuery(function($) {
+            // Grab whatever we need to paginate
+            var pageParts = $(".found-card");
+            // How many parts do we have?
+            var numPages = pageParts.length;
+            // How many parts do we want per page?
+            var perPage = 5;
+
+            // When the document loads we're on page 1
+            // So to start with... hide everything else
+            pageParts.slice(perPage).hide();
+            // Apply simplePagination to our placeholder
+            $("#page-nav-found-cards").pagination({
+                items: numPages,
+                itemsOnPage: perPage,
+                cssStyle: "light-theme",
+                // We implement the actual pagination
+                //   in this next function. It runs on
+                //   the event that a user changes page
+                onPageClick: function(pageNum) {
+                    // Which page parts do we show?
+                    var start = perPage * (pageNum - 1);
+                    var end = start + perPage;
+
+                    // First hide all page parts
+                    // Then show those just for our page
+                    pageParts.hide()
+                        .slice(start, end).show();
+                }
+            });
+        });
+	</script>
+
 
 	<h3>Cards in deck:</h3>
 	<c:if test="${not empty deck.cards}">
-		<table style="width: 100%" id="cards-in-deck" class="table table-bordered">
+		<table style="width: 100%" class="table table-bordered">
 			<thead>
 			<tr>
 				<th class="text-center" width="15%">name</th>
@@ -86,11 +122,11 @@
 				<th class="text-center" width="10%">remove</th>
 			</tr>
 			</thead>
-			<tbody>
+			<tbody id="cards-in-deck">
 			<c:forEach var="entry" items="${deck.cards}">
 
 				<tr class="paginate" style="font-size: 80%">
-					<td class="text-center">
+					<td class="name text-center">
 							<a class="card-name" href="${entry.key.imageUrl}"><c:out
 							value="${entry.key.name}"/></a> X ${entry.value}
 					</td>
@@ -119,17 +155,40 @@
 		<div id="page-nav"></div>
 	</c:if>
 
-	<%--<script type="text/javascript">
+	<script type="text/javascript">
+        jQuery(function($) {
+            // Grab whatever we need to paginate
+            var pageParts = $(".paginate");
 
-        $(document).ready( function () {
-            $('#cards-in-deck').DataTable({
-                fixedColumns: true
+            // How many parts do we have?
+            var numPages = pageParts.length;
+            // How many parts do we want per page?
+            var perPage = 20;
+
+            // When the document loads we're on page 1
+            // So to start with... hide everything else
+            pageParts.slice(perPage).hide();
+            // Apply simplePagination to our placeholder
+            $("#page-nav").pagination({
+                items: numPages,
+                itemsOnPage: perPage,
+                cssStyle: "light-theme",
+                // We implement the actual pagination
+                //   in this next function. It runs on
+                //   the event that a user changes page
+                onPageClick: function(pageNum) {
+                    // Which page parts do we show?
+                    var start = perPage * (pageNum - 1);
+                    var end = start + perPage;
+
+                    // First hide all page parts
+                    // Then show those just for our page
+                    pageParts.hide()
+                        .slice(start, end).show();
+                }
             });
-        } );
-
-	</script>--%>
-
-
+        });
+	</script>
 
 	<%--display card's image--%>
 	<div hidden id="image" class="popover-card popover fade right in"
