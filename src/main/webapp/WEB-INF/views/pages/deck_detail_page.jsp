@@ -3,9 +3,10 @@
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="mtg" uri="http://www.mtg.com/tags"%>
 
 <div class="container">
-	
+
 	<a href="/decks/${deck.id}/compareDeck">Compare</a>
 	
 	<a href="/decks/${deck.id}/bulkAdd">Bulk add</a>
@@ -46,10 +47,10 @@
 					</td>
 					<td class="text-center"><i
 							class="ss ss-${element.set.concat(" ss-").concat(element.rarity)}  ss-grad"
-							style="font-size: 2em;"></i></td>
+							style="font-size: 2em;" title="${element.setName}"></i></td>
 					<td class="text-center"><c:out value="${element.type}"/></td>
 					<td class="mana-cost text-center">
-						<p hidden>${element.manaCost}</p>
+						${mtg:parseManaCost(element.manaCost)}
 					</td>
 					<td><c:out value="${element.text}"/></td>
 					<td class="col-sm-12">
@@ -74,7 +75,8 @@
 
 	<h3>Cards in deck:</h3>
 	<c:if test="${not empty deck.cards}">
-		<table style="width: 100%" class="table table-bordered">
+		<table style="width: 100%" id="cards-in-deck" class="table table-bordered">
+			<thead>
 			<tr>
 				<th class="text-center" width="15%">name</th>
 				<th class="text-center" width="5%">set</th>
@@ -83,19 +85,21 @@
 				<th class="text-center" width="50%">text</th>
 				<th class="text-center" width="10%">remove</th>
 			</tr>
+			</thead>
+			<tbody>
 			<c:forEach var="entry" items="${deck.cards}">
 
-				<tr style="font-size: 80%">
+				<tr class="paginate" style="font-size: 80%">
 					<td class="text-center">
-							${entry.value} X <a class="card-name" href="${entry.key.imageUrl}"><c:out
-							value="${entry.key.name}"/></a>
+							<a class="card-name" href="${entry.key.imageUrl}"><c:out
+							value="${entry.key.name}"/></a> X ${entry.value}
 					</td>
 					<td class="text-center"><i
 							class="ss ss-${entry.key.set.concat(" ss-").concat(entry.key.rarity)}  ss-grad"
-							style="font-size: 2em;"></i></td>
+							style="font-size: 2em;" title="${entry.key.setName}"></i></td>
 					<td class="text-center"><c:out value="${entry.key.type}"/></td>
 					<td class="mana-cost text-center">
-						<p hidden>${entry.key.manaCost}</p>
+						${mtg:parseManaCost(entry.key.manaCost)}
 					</td>
 					<td><c:out value="${entry.key.text}"/></td>
 					<td>
@@ -110,8 +114,22 @@
 					</td>
 				</tr>
 			</c:forEach>
+			</tbody>
 		</table>
+		<div id="page-nav"></div>
 	</c:if>
+
+	<%--<script type="text/javascript">
+
+        $(document).ready( function () {
+            $('#cards-in-deck').DataTable({
+                fixedColumns: true
+            });
+        } );
+
+	</script>--%>
+
+
 
 	<%--display card's image--%>
 	<div hidden id="image" class="popover-card popover fade right in"
@@ -145,9 +163,10 @@
                     $('#image-url').attr('src', image_url);
 //                  replace positions values with constants
                     $('#image').css({left: position.left + width + 5, top: position.top - 158});
-                    $('#image').fadeIn(10);
+                    $('#image').fadeIn(0);
                 }, function () {
-                    $('#image').fadeOut(10);
+                    $('#image').fadeOut(0);
+                    $('#image-url').attr('src', "");
                 }
             );
 
@@ -155,30 +174,4 @@
 
 	</script>
 
-	<script type="text/javascript">
-        $(document).ready(function () {
-            $('.mana-cost').each(function (index) {
-                var message = $.trim($(this).find('p').html());
-                var array = message.split(" ");
-                if (array.length == 1 && $.trim(array[0]).split("/").length == 1) {
-                    $(this).append('<i class="ms ms-' + $.trim(array[0]) + '" style="font-size: 1.4em;"></i>');
-                }
-                else {
-                    for (i = 0; i < array.length; i++) {
-                        if (array[i].split("/").length == 2) {
-                            var splited = array[i].split('/');
-                            $(this).append('<i class="ms ms-' + splited[0] + splited[1] + ' + ms-split ms-cost" style="font-size: 1.4em;"> </i>');
-                        }
-                        if (!isBlank(array[i]) && array[i].split("/").length == 1) {
-                            $(this).append('<i class="ms ms-' + array[i] + '" style="font-size: 1.4em;"></i>');
-                        }
-                    }
-                }
-            });
-        });
-
-        function isBlank(str) {
-            return (!str || /^\s*$/.test(str));
-        }
-	</script>
 </div>
