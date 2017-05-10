@@ -67,7 +67,7 @@ public class JsonParser {
 			card.setType(((String) cardJson.get("type")).replaceAll("â€”", "-"));
 			card.setRarity((String) cardJson.get("rarity"));
 			card.setSetName((String) cardJson.get("setName"));
-			card.setText((String) cardJson.get("text"));
+			card.setText(((String) cardJson.get("text")).replaceAll("â€”", "-"));
 			card.setSet((String) cardJson.get("set"));
 			String manaCost = (String) cardJson.get("manaCost");
 			if (null != manaCost) {
