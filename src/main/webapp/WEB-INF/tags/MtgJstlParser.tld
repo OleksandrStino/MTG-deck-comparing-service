@@ -9,4 +9,9 @@
         <function-class>com.mtg.utility.tags.JstlMtgParser</function-class>
         <function-signature>java.lang.String parseManaCost(java.lang.String)</function-signature>
     </function>
+    <function>
+        <name>parseCardText</name>
+        <function-class>com.mtg.utility.tags.JstlMtgParser</function-class>
+        <function-signature>java.lang.String parseCardText(java.lang.String)</function-signature>
+    </function>
 </taglib>

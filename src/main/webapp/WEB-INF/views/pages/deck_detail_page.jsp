@@ -52,7 +52,7 @@
 					<td class="mana-cost text-center">
 						${mtg:parseManaCost(element.manaCost)}
 					</td>
-					<td><c:out value="${element.text}"/></td>
+					<td>${mtg:parseCardText(element.text)}</td>
 					<td class="col-sm-12">
 						<form action="/decks/${deck.id}/addCardFromList" class="form-inline" method="post">
 							<div class="form-group col-sm-7">
@@ -137,7 +137,7 @@
 					<td class="mana-cost text-center">
 						${mtg:parseManaCost(entry.key.manaCost)}
 					</td>
-					<td><c:out value="${entry.key.text}"/></td>
+					<td>${mtg:parseCardText(entry.key.text)}</td>
 					<td>
 						<form action="/decks/${deck.id}/${entry.key.multiverseid}/removeCard" class="form-inline"
 							  method="post">
