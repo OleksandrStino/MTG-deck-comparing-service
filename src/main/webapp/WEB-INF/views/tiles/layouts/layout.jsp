@@ -39,8 +39,6 @@
 	<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/static/css/simplePagination.css"/>
 
 
-
-
 </head>
 
 <body>
@@ -57,6 +55,9 @@
 </section>
 
 <footer id="footer">
+	<!-- scripts -->
+	<script type="text/javascript" src="${pageContext.request.contextPath}/static/js/pages/deck_detail_page.js"></script>
+	<!-- end scripts -->
 	<tiles:insertAttribute name="footer"/>
 </footer>
 </body>
